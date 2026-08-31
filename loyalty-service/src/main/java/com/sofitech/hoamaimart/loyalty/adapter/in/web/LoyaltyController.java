@@ -5,6 +5,8 @@ import com.sofitech.hoamaimart.loyalty.adapter.in.web.dto.RedeemRequest;
 import com.sofitech.hoamaimart.loyalty.domain.model.LoyaltyAccount;
 import com.sofitech.hoamaimart.loyalty.domain.port.in.LoyaltyCommandService;
 import com.sofitech.hoamaimart.loyalty.domain.port.out.LoyaltyRepository;
+import com.sofitech.hoamaimart.shared.error.BusinessErrorCode;
+import com.sofitech.hoamaimart.shared.error.BusinessException;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +40,10 @@ public class LoyaltyController {
         return loyaltyRepository.findByCustomerId(customerId)
                 .map(LoyaltyResponse::from)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> BusinessException.of(
+                    BusinessErrorCode.LOYALTY_ACCOUNT_NOT_FOUND,
+                    "Không tìm thấy tài khoản loyalty cho khách: " + customerId
+                ));
     }
 
     /**

@@ -4,6 +4,8 @@ import com.sofitech.hoamaimart.loyalty.domain.model.LoyaltyAccount;
 import com.sofitech.hoamaimart.loyalty.domain.model.Points;
 import com.sofitech.hoamaimart.loyalty.domain.port.in.LoyaltyCommandService;
 import com.sofitech.hoamaimart.loyalty.domain.port.out.LoyaltyRepository;
+import com.sofitech.hoamaimart.shared.error.BusinessErrorCode;
+import com.sofitech.hoamaimart.shared.error.BusinessException;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -11,6 +13,7 @@ import java.util.UUID;
 
 /**
  * Application service: xử lý use case loyalty.
+ * Convert IllegalArgumentException (domain) → BusinessException (gắn error code).
  */
 public class LoyaltyService implements LoyaltyCommandService {
 
@@ -22,14 +25,11 @@ public class LoyaltyService implements LoyaltyCommandService {
 
     @Override
     public void addPoints(UUID customerId, BigDecimal transactionAmount) {
-        // 1. Tìm hoặc tạo tài khoản loyalty
         LoyaltyAccount account = loyaltyRepository.findByCustomerId(customerId)
                 .orElseGet(() -> LoyaltyAccount.createNew(customerId));
 
-        // 2. Cộng điểm tích lũy
         account.addPointsFromTransaction(transactionAmount);
 
-        // 3. Ghi nhận chi tiêu
         loyaltyRepository.recordSpending(
                 customerId,
                 UUID.randomUUID(),
@@ -37,11 +37,9 @@ public class LoyaltyService implements LoyaltyCommandService {
                 Instant.now()
         );
 
-        // 4. Cập nhật tier dựa trên rolling window spending
         BigDecimal rollingSpending = loyaltyRepository.calculateRollingWindowSpending(customerId);
         account.evaluateTier(rollingSpending.longValue());
 
-        // 5. Lưu vào DB
         loyaltyRepository.save(account);
     }
 
@@ -49,19 +47,26 @@ public class LoyaltyService implements LoyaltyCommandService {
     public LoyaltyAccount redeem(UUID customerId, int pointsToRedeem) {
         // 1. Validate input
         if (pointsToRedeem <= 0) {
-            throw new IllegalArgumentException("Số điểm quy đổi phải > 0");
+            throw BusinessException.of(
+                BusinessErrorCode.LOYALTY_INVALID_POINTS,
+                "Số điểm quy đổi phải > 0, nhận: " + pointsToRedeem
+            );
         }
 
-        // 2. Tìm tài khoản loyalty (phải tồn tại - không tự tạo mới khi redeem)
+        // 2. Tìm tài khoản
         LoyaltyAccount account = loyaltyRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                    "Khách hàng chưa có tài khoản loyalty. Hãy mua hàng trước."
+                .orElseThrow(() -> BusinessException.of(
+                    BusinessErrorCode.LOYALTY_ACCOUNT_NOT_FOUND,
+                    "Khách hàng chưa có tài khoản loyalty: " + customerId
                 ));
 
-        // 3. Trừ điểm (domain sẽ throw nếu không đủ)
-        account.redeem(Points.of(pointsToRedeem));
+        // 3. Trừ điểm (domain throw IllegalArgumentException)
+        try {
+            account.redeem(Points.of(pointsToRedeem));
+        } catch (IllegalArgumentException e) {
+            throw BusinessException.of(BusinessErrorCode.LOYALTY_INSUFFICIENT_POINTS, e.getMessage());
+        }
 
-        // 4. Lưu vào DB
         return loyaltyRepository.save(account);
     }
 }
