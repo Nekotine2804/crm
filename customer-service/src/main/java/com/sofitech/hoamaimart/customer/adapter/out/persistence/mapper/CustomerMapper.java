@@ -5,7 +5,8 @@ import com.sofitech.hoamaimart.customer.domain.model.Customer;
 import org.springframework.stereotype.Component;
 
 /**
- * Mapper chuyển đổi giữa Domain entity và JPA entity.
+ * Mapper chuyển đổi giữa Domain và JPA entity.
+ * Dùng method thuần Java thay vì MapStruct.
  */
 @Component
 public class CustomerMapper {

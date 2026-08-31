@@ -15,7 +15,7 @@ import java.util.UUID;
  * hoặc version hoá routing key (vd. "transaction.completed.v2") vì các service
  * deploy độc lập, không cùng lúc.
  */
-public interface rèDomainEvent {
+public interface DomainEvent {
 
     UUID eventId();
 
