@@ -37,4 +37,9 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
                 .map(mapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public Optional<Transaction> findByTransactionCode(String transactionCode) {
+        return jpaRepository.findByTransactionCode(transactionCode).map(mapper::toDomain);
+    }
 }

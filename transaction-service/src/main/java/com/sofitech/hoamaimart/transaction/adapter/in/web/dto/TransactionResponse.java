@@ -13,6 +13,7 @@ public record TransactionResponse(
         UUID transactionId,
         UUID customerId,
         String storeId,
+        String transactionCode,
         BigDecimal amount,
         String status,
         Instant createdAt
@@ -23,6 +24,7 @@ public record TransactionResponse(
                 transaction.getId(),
                 transaction.getCustomerId(),
                 transaction.getStoreId(),
+                transaction.getTransactionCode(),
                 transaction.getAmountValue(),
                 transaction.getStatus().name(),
                 transaction.getCreatedAt()

@@ -17,6 +17,9 @@ public record CreateTransactionRequest(
         @NotBlank(message = "Mã cửa hàng không được để trống")
         String storeId,
 
+        @NotBlank(message = "Mã giao dịch (transactionCode) không được để trống - dùng cho idempotency")
+        String transactionCode,
+
         @NotNull(message = "Số tiền không được để trống")
         @DecimalMin(value = "0.01", message = "Số tiền phải lớn hơn 0")
         BigDecimal amount

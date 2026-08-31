@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
  * REST Controller - Adapter IN.
  */
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping("/api/v1/pos/transactions")
 public class TransactionController {
 
     private final CreateTransactionCommandService createTransactionService;
@@ -23,38 +23,26 @@ public class TransactionController {
     }
 
     /**
-     * POST /api/transactions - Tạo giao dịch mới.
+     * POST /api/v1/pos/transactions - Tạo giao dịch mới.
      *
      * Request body:
      * {
      *   "customerId": "550e8400-...",
      *   "storeId": "STORE_001",
+     *   "transactionCode": "POS-20240115-001",
      *   "amount": 150000.00
      * }
      *
-     * Response (201 Created):
-     * {
-     *   "transactionId": "...",
-     *   "customerId": "...",
-     *   "storeId": "STORE_001",
-     *   "amount": 150000.00,
-     *   "status": "COMPLETED",
-     *   "createdAt": "2024-01-15T10:30:00Z"
-     * }
+     * Idempotent theo transactionCode.
      */
     @PostMapping
-    public ResponseEntity<?> createTransaction(@Valid @RequestBody CreateTransactionRequest request) {
-        try {
-            Transaction transaction = createTransactionService.createTransaction(
-                    request.customerId(),
-                    request.storeId(),
-                    request.amount()
-            );
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(TransactionResponse.from(transaction));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(new ErrorResponse("VALIDATION_ERROR", e.getMessage(), 400));
-        }
+    public ResponseEntity<TransactionResponse> createTransaction(@Valid @RequestBody CreateTransactionRequest request) {
+        Transaction transaction = createTransactionService.createTransaction(
+                request.customerId(),
+                request.storeId(),
+                request.transactionCode(),
+                request.amount()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(TransactionResponse.from(transaction));
     }
 }

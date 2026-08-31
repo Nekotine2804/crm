@@ -16,4 +16,9 @@ public interface TransactionRepository {
     Optional<Transaction> findById(UUID id);
 
     List<Transaction> findByCustomerId(UUID customerId);
+
+    /**
+     * Idempotency: tìm theo transactionCode do POS cung cấp.
+     */
+    Optional<Transaction> findByTransactionCode(String transactionCode);
 }

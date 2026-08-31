@@ -12,6 +12,7 @@ public interface CreateTransactionCommandService {
 
     /**
      * Tạo giao dịch mới và publish event.
+     * Có idempotency theo transactionCode.
      */
-    Transaction createTransaction(UUID customerId, String storeId, BigDecimal amount);
+    Transaction createTransaction(UUID customerId, String storeId, String transactionCode, BigDecimal amount);
 }
