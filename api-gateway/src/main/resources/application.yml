@@ -1,0 +1,45 @@
+server:
+  port: 8000 # cùng vị trí "cửa vào" mà trước đây Kong đứng ở :8000
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: customer-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/customers/**
+
+        - id: loyalty-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/loyalty/**
+
+        - id: transaction-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/transactions/**
+
+        - id: promotion-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/promotions/**
+
+        - id: notification-service
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/notifications/**
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway

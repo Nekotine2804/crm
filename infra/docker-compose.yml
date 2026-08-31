@@ -1,0 +1,72 @@
+version: "3.8"
+
+# Hạ tầng local cho dev/demo. KHÔNG dùng cho production.
+# Database-per-service: mỗi service có 1 Postgres schema/DB riêng, không share DB.
+
+services:
+  # ---------- Message broker (giao tiếp bất đồng bộ giữa các service) ----------
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on: [zookeeper]
+    ports: ["9092:9092"]
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  # ---------- Cache dùng chung (session, rate-limit, cache tra cứu điểm...) ----------
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  # ---------- Database per service ----------
+  postgres-customer:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: hoa_mai_customer
+      POSTGRES_USER: crm_user
+      POSTGRES_PASSWORD: change-me
+    ports: ["5441:5432"]
+
+  postgres-loyalty:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: hoa_mai_loyalty
+      POSTGRES_USER: crm_user
+      POSTGRES_PASSWORD: change-me
+    ports: ["5442:5432"]
+
+  postgres-transaction:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: hoa_mai_transaction
+      POSTGRES_USER: crm_user
+      POSTGRES_PASSWORD: change-me
+    ports: ["5443:5432"]
+
+  postgres-promotion:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: hoa_mai_promotion
+      POSTGRES_USER: crm_user
+      POSTGRES_PASSWORD: change-me
+    ports: ["5444:5432"]
+
+  postgres-notification:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: hoa_mai_notification
+      POSTGRES_USER: crm_user
+      POSTGRES_PASSWORD: change-me
+    ports: ["5445:5432"]
+
+  # ---------- API Gateway ----------
+  # KHÔNG còn ở đây: api-gateway giờ là 1 Spring Boot app (module api-gateway/),
+  # chạy bằng "mvn spring-boot:run" hoặc build image riêng như các service khác,
+  # không phải 1 hạ tầng ngoài như Kong. Xem api-gateway/src/main/resources/application.yml.
