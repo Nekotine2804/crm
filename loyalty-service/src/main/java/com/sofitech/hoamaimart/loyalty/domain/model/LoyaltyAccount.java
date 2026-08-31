@@ -61,6 +61,24 @@ public class LoyaltyAccount {
     }
 
     /**
+     * Quy đổi điểm (redeem).
+     * @throws IllegalArgumentException nếu không đủ điểm hoặc points không hợp lệ
+     */
+    public void redeem(Points pointsToRedeem) {
+        if (pointsToRedeem == null || pointsToRedeem.isZero()) {
+            throw new IllegalArgumentException("Số điểm quy đổi phải > 0");
+        }
+        if (!this.points.isGreaterThanOrEqual(pointsToRedeem)) {
+            throw new IllegalArgumentException(
+                "Không đủ điểm để quy đổi. Hiện có: " + this.points.value()
+                + ", yêu cầu: " + pointsToRedeem.value()
+            );
+        }
+        this.points = this.points.subtract(pointsToRedeem);
+        this.updatedAt = Instant.now();
+    }
+
+    /**
      * Cập nhật tier dựa trên chi tiêu rolling window.
      * Gọi định kỳ (hàng tháng/quý).
      */

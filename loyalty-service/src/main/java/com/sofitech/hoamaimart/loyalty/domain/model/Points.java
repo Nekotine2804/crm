@@ -30,8 +30,26 @@ public record Points(int value) {
         return new Points(this.value + other.value);
     }
 
+    /**
+     * Trừ điểm
+     */
+    public Points subtract(Points other) {
+        int newValue = this.value - other.value;
+        if (newValue < 0) {
+            throw new IllegalArgumentException("Kết quả không thể âm");
+        }
+        return new Points(newValue);
+    }
+
     public boolean isZero() {
         return value == 0;
+    }
+
+    /**
+     * Kiểm tra đủ điểm
+     */
+    public boolean isGreaterThanOrEqual(Points other) {
+        return this.value >= other.value;
     }
 
     /**
