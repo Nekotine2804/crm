@@ -7,12 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 /**
  * Adapter OUT: publish events qua RabbitMQ.
  */
-@Component
 public class RabbitMQEventPublisher implements EventPublisher {
 
     private static final Logger log = LoggerFactory.getLogger(RabbitMQEventPublisher.class);

@@ -3,15 +3,11 @@ package com.sofitech.hoamaimart.customer.adapter.out.persistence.repository;
 import com.sofitech.hoamaimart.customer.adapter.out.persistence.mapper.CustomerMapper;
 import com.sofitech.hoamaimart.customer.domain.model.Customer;
 import com.sofitech.hoamaimart.customer.domain.port.out.CustomerRepository;
-import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Adapter OUT: implement CustomerRepository dùng JPA.
- */
-@Component
+
 public class CustomerRepositoryAdapter implements CustomerRepository {
 
     private final CustomerJpaRepository jpaRepository;
