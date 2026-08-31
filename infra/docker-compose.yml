@@ -5,20 +5,14 @@ version: "3.8"
 
 services:
   # ---------- Message broker (giao tiếp bất đồng bộ giữa các service) ----------
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.0
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    ports:
+      - "5672:5672"   # AMQP protocol
+      - "15672:15672" # Management UI: http://localhost:15672 (guest/guest)
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-
-  kafka:
-    image: confluentinc/cp-kafka:7.6.0
-    depends_on: [zookeeper]
-    ports: ["9092:9092"]
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
 
   # ---------- Cache dùng chung (session, rate-limit, cache tra cứu điểm...) ----------
   redis:

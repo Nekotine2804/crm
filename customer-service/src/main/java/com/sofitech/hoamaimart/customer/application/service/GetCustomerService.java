@@ -27,4 +27,9 @@ public class GetCustomerService implements CustomerQueryService {
     public Optional<Customer> findByPhone(String phone) {
         return customerRepository.findByPhone(phone);
     }
+
+    @Override
+    public boolean existsByPhone(String phone) {
+        return customerRepository.existsByPhone(phone);
+    }
 }

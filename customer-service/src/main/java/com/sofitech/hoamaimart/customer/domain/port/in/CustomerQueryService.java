@@ -13,4 +13,6 @@ public interface CustomerQueryService {
     Optional<Customer> findById(UUID id);
 
     Optional<Customer> findByPhone(String phone);
+
+    boolean existsByPhone(String phone);
 }

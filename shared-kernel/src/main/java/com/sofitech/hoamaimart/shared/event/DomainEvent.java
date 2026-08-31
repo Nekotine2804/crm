@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Contract dùng chung cho MỌI event trao đổi qua Kafka giữa các service.
+ * Contract dùng chung cho MỌI event trao đổi qua RabbitMQ giữa các service.
  *
  * shared-kernel là 1 Maven module RIÊNG, build thành .jar, các service
  * khai báo như 1 dependency (KHÔNG copy code, KHÔNG chứa business logic
@@ -12,15 +12,15 @@ import java.util.UUID;
  * thuần Java, không phụ thuộc Spring).
  *
  * Khi đổi version của event (thêm field...), phải giữ backward-compatible
- * hoặc version hoá topic (vd. "transaction.completed.v2") vì các service
+ * hoặc version hoá routing key (vd. "transaction.completed.v2") vì các service
  * deploy độc lập, không cùng lúc.
  */
-public interface DomainEvent {
+public interface rèDomainEvent {
 
     UUID eventId();
 
     Instant occurredAt();
 
-    /** vd. "transaction.completed", "loyalty.points.earned" — cũng là tên Kafka topic gợi ý */
+    /** vd. "transaction.completed", "loyalty.points.earned" — cũng là routing key gợi ý */
     String eventType();
 }

@@ -3,7 +3,7 @@
 Chuyển từ Modular Monolith sang **Microservices**: mỗi bounded context giờ là
 1 service Spring Boot độc lập, có DB riêng, deploy/scale riêng. Bên trong mỗi
 service vẫn giữ **Hexagonal (Ports & Adapters)**; giao tiếp **giữa** các
-service là **Event-Driven qua Kafka** (bất đồng bộ) hoặc REST qua
+service là **Event-Driven qua RabbitMQ** (bất đồng bộ) hoặc REST qua
 **Spring Cloud Gateway** (khi cần đồng bộ).
 
 ## Sơ đồ tổng quan
@@ -17,9 +17,11 @@ service là **Event-Driven qua Kafka** (bất đồng bộ) hoặc REST qua
                                               ──> notification-service(:8085, DB riêng)
 
    Tất cả service đều publish/subscribe qua:
-                        ┌─────────────┐
-                        │    Kafka    │
-                        └─────────────┘
+                        ┌──────────────┐
+                        │  RabbitMQ   │
+                        │ (:5672, UI  │
+                        │  :15672)    │
+                        └──────────────┘
 ```
 
 ## Vì sao Spring Cloud Gateway (thay vì Kong / cloud API Gateway)
@@ -38,22 +40,31 @@ service là **Event-Driven qua Kafka** (bất đồng bộ) hoặc REST qua
   viết bằng ngôn ngữ khác (Python/Node), lợi thế "cùng ngôn ngữ" sẽ mất đi
   (nhưng Gateway vẫn route HTTP bình thường được, chỉ mất phần tiện lợi).
 
-## Vì sao mỗi service vẫn theo Hexagonal + tại sao tách event ra Kafka
+## Vì sao RabbitMQ thay vì Kafka
+
+- **Đơn giản hơn cho đội nhỏ**: RabbitMQ có UI quản lý trực quan (`:15672`),
+  cấu hình queue/routing key dễ hiểu, không cần Zookeeper như Kafka.
+- **Đủ dùng cho quy mô**: với 47 cửa hàng hiện tại và 80 trong 18 tháng,
+  RabbitMQ đáp ứng tốt, không cần độ phức tạp của Kafka.
+- **Đánh đổi**: Kafka mạnh hơn về throughput & durability (lưu log), nhưng
+  RabbitMQ đủ cho use case này và vận hành đơn giản hơn nhiều.
+
+## Vì sao mỗi service vẫn theo Hexagonal + tại sao tách event ra RabbitMQ
 
 - **Database per service**: `transaction-service` không được query thẳng DB
   của `loyalty-service`. Muốn biết khách hàng có bao nhiêu điểm, phải gọi
   API `loyalty-service` (qua gateway) hoặc lắng nghe event.
-- **Event-driven qua Kafka thay vì gọi đồng bộ**: khi `transaction-service`
-  ghi nhận hóa đơn xong, nó publish `transaction.completed` lên Kafka.
-  `loyalty-service` subscribe topic này để cộng điểm, `notification-service`
-  subscribe để gửi SMS cảm ơn/ưu đãi — **không đồng bộ, không phụ thuộc
-  transaction-service phải chờ 2 service kia phản hồi** → transaction-service
-  vẫn hoạt động được dù loyalty-service đang down (resilience).
+- **Event-driven qua RabbitMQ thay vì gọi đồng bộ**: khi `transaction-service`
+  ghi nhận hóa đơn xong, nó publish `transaction.completed` (routing key)
+  lên RabbitMQ. `loyalty-service` bind queue để nhận event này, cộng điểm
+  theo hạng thành viên — **không đồng bộ, không phụ thuộc transaction-service
+  phải chờ 2 service kia phản hồi** → transaction-service vẫn hoạt động được
+  dù loyalty-service đang down (resilience).
 - **shared-kernel**: 1 module Maven build ra `.jar` chứa contract `DomainEvent`
   + schema event dùng chung, KHÔNG chứa business logic của service nào. Mỗi
   service khai báo nó như 1 dependency (`mvn install` module này trước).
-- **Hexagonal bên trong từng service**: domain vẫn không phụ thuộc Spring/Kafka
-  — khi đổi Kafka sang RabbitMQ hay đổi Postgres sang DB khác, chỉ sửa
+- **Hexagonal bên trong từng service**: domain vẫn không phụ thuộc Spring/RabbitMQ
+  — khi đổi RabbitMQ sang Kafka hay đổi Postgres sang DB khác, chỉ sửa
   `adapter/`, domain/application không đổi.
 
 ## Cấu trúc thư mục
@@ -63,7 +74,7 @@ hoa-mai-mart-crm-ms/
 ├── shared-kernel/               # Maven lib: DomainEvent contract, exception, util chung
 ├── api-gateway/                 # Spring Cloud Gateway - cổng vào duy nhất (:8000)
 │   └── src/main/java/.../gateway/
-│       ├── filter/                # GlobalFilter tùy biến (logging, sau này auth/JWT...)
+│       ├── filter/                # GlobalFilter tùy biến (logging, mock auth...)
 │       └── config/
 │
 ├── customer-service/            # Mỗi service = 1 Spring Boot app riêng biệt
@@ -75,32 +86,32 @@ hoa-mai-mart-crm-ms/
 │   └── src/main/java/.../<service>/
 │       ├── domain/                 # LÕI - thuần Java, không phụ thuộc framework
 │       │   ├── model/
-│       │   ├── event/                # Domain event NỘI BỘ service (khác event Kafka ra ngoài)
+│       │   ├── event/                # Domain event NỘI BỘ service (khác message ra ngoài)
 │       │   ├── exception/
 │       │   └── port/{in,out}/
 │       ├── application/
 │       │   ├── service/               # Use case
-│       │   └── eventhandler/           # Xử lý Kafka event NHẬN từ service khác
+│       │   └── eventhandler/           # Xử lý RabbitMQ message NHẬN từ service khác
 │       ├── adapter/
 │       │   ├── in/web/                 # REST Controller (đứng sau api-gateway)
-│       │   ├── in/messaging/           # @KafkaListener - consume event từ service khác
+│       │   ├── in/messaging/           # @RabbitListener - consume message từ service khác
 │       │   ├── out/persistence/        # JPA - CHỈ thao tác DB của chính service này
-│       │   ├── out/messaging/          # KafkaTemplate - publish event ra ngoài
+│       │   ├── out/messaging/          # RabbitTemplate - publish message ra ngoài
 │       │   └── out/client/             # Gọi REST service khác (qua gateway) nếu bắt buộc đồng bộ
-│       └── config/                    # Cấu hình Kafka/Redis riêng của service
+│       └── config/                    # Cấu hình RabbitMQ/Redis riêng của service
 │
-├── infra/docker-compose.yml     # Kafka, Redis, 1 Postgres/service (chạy local)
+├── infra/docker-compose.yml     # RabbitMQ (UI:15672), Redis, 1 Postgres/service (chạy local)
 └── README.md
 ```
 
 ## Ví dụ luồng event xuyên service (đưa vào Sequence Diagram – 4.7)
 
 1. Nhân viên quét hóa đơn tại POS → gọi `POST /api/transactions` qua api-gateway.
-2. `transaction-service` lưu giao dịch vào DB riêng, publish event
-   `transaction.completed` (customerId, storeId, amount) lên Kafka.
-3. `loyalty-service` consume event → tính điểm theo hạng thành viên → lưu
+2. `transaction-service` lưu giao dịch vào DB riêng, publish message
+   routing key `transaction.completed` (customerId, storeId, amount) qua RabbitMQ.
+3. `loyalty-service` nhận message → tính điểm theo hạng thành viên → lưu
    vào DB riêng → publish tiếp `loyalty.points.earned`.
-4. `notification-service` consume `loyalty.points.earned` → gửi SMS
+4. `notification-service` nhận `loyalty.points.earned` → gửi SMS
    "Bạn vừa được cộng X điểm".
 
 `transaction-service` hoàn toàn không biết `notification-service` tồn tại.
@@ -109,20 +120,22 @@ hoa-mai-mart-crm-ms/
 
 ```bash
 cd shared-kernel && mvn install -N        # build & install shared-kernel vào .m2 local
-cd ../infra && docker compose up -d       # Kafka, Redis, Postgres x5
+cd ../infra && docker compose up -d       # RabbitMQ (:5672, UI :15672), Redis, Postgres x5
 cd ../api-gateway && mvn spring-boot:run  # cổng vào ở :8000
-# ở các terminal khác, chạy từng service:
+# ở các terminal khác, chạy t�ng service:
 cd ../customer-service && mvn spring-boot:run
 ```
+
+**RabbitMQ Management UI:** http://localhost:15672 (guest/guest)
 
 ## Lưu ý khi trình bày / đưa vào tài liệu bài SOFITECH
 
 - Đây là **kiến trúc mục tiêu (target architecture)** để chứng minh năng lực
   thiết kế microservices; trong 5 ngày làm assignment, chỉ cần code POC thật
-  cho 1–2 service (gợi ý: `transaction-service` + `loyalty-service`, vì đây
+  cho 1–2 service (gợi ý: `customer-service` + `transaction-service`, vì đây
   là luồng nghiệp vụ lõi nhất), các service còn lại giữ nguyên skeleton +
   ghi rõ trong **Assumption Document**.
-- Việc chuyển từ Monolith sang Microservices, và chọn Spring Cloud Gateway
-  thay vì Kong/cloud API Gateway, nên là 2 mục riêng trong **Decision Log**
-  (4.14): lý do, đánh đổi — đội IT chỉ 6 người là 1 rủi ro cần nêu trong
-  **Risk Assessment** (4.12).
+- Việc chuyển từ Monolith sang Microservices, chọn Spring Cloud Gateway
+  thay vì Kong/cloud API Gateway, và chọn RabbitMQ thay vì Kafka, nên là
+  các mục riêng trong **Decision Log** (4.14): lý do, đánh đổi — đội IT
+  chỉ 6 người là 1 rủi ro cần nêu trong **Risk Assessment** (4.12).
