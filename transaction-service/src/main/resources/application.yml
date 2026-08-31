@@ -7,8 +7,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/hoa_mai_transaction
-    username: crm_user
-    password: change-me
+    username: postgres
+    password: postgres
 
   jpa:
     hibernate:
