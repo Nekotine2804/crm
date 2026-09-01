@@ -1,6 +1,8 @@
+com/sofitech/hoamaimart/customer/config/RabbitMQConfig.class
 com/sofitech/hoamaimart/customer/domain/model/vo/PhoneNumber.class
 com/sofitech/hoamaimart/customer/CustomerServiceApplication.class
 com/sofitech/hoamaimart/customer/config/OpenApiConfig.class
+com/sofitech/hoamaimart/customer/adapter/out/messaging/RabbitMQEventPublisher.class
 com/sofitech/hoamaimart/customer/adapter/in/web/dto/CustomerVO.class
 com/sofitech/hoamaimart/customer/adapter/in/web/dto/CustomerExistsResponse.class
 com/sofitech/hoamaimart/customer/adapter/out/persistence/entity/CustomerEntity.class
@@ -19,6 +21,7 @@ com/sofitech/hoamaimart/customer/application/service/GetCustomerService.class
 com/sofitech/hoamaimart/customer/domain/port/in/CustomerQueryService.class
 com/sofitech/hoamaimart/customer/adapter/out/persistence/repository/CustomerRepositoryAdapter.class
 com/sofitech/hoamaimart/customer/adapter/in/web/dto/UpdateCustomerRequest.class
+com/sofitech/hoamaimart/customer/domain/port/out/EventPublisher.class
 com/sofitech/hoamaimart/customer/domain/model/Customer.class
 com/sofitech/hoamaimart/customer/application/service/CreateCustomerService.class
 com/sofitech/hoamaimart/customer/adapter/out/persistence/mapper/CustomerMapper.class

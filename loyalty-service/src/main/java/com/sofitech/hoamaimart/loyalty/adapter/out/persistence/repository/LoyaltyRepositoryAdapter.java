@@ -40,8 +40,14 @@ public class LoyaltyRepositoryAdapter implements LoyaltyRepository {
     }
 
     @Override
+    @Transactional
     public LoyaltyAccount save(LoyaltyAccount account) {
-        LoyaltyAccountEntity entity = LoyaltyAccountEntity.fromDomain(account);
+        LoyaltyAccountEntity entity = jpaRepository.findById(account.getId())
+                .map(existing -> {
+                    existing.updateFromDomain(account);
+                    return existing;
+                })
+                .orElseGet(() -> LoyaltyAccountEntity.fromDomain(account));
         return jpaRepository.save(entity).toDomain();
     }
 

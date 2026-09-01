@@ -13,7 +13,6 @@ import java.util.UUID;
 public class TransactionEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "customer_id", nullable = false)
@@ -83,10 +82,21 @@ public class TransactionEntity {
                 transaction.getStatus().name(),
                 transaction.getCreatedAt()
         );
-        entity.updatedAt = transaction.getUpdatedAt();
-        entity.cancelledAt = transaction.getCancelledAt();
-        entity.refundReason = transaction.getRefundReason();
+        entity.updateFromDomain(transaction);
         return entity;
+    }
+
+    /** Updates a managed entity without discarding its optimistic-lock version. */
+    public void updateFromDomain(Transaction transaction) {
+        this.customerId = transaction.getCustomerId();
+        this.storeId = transaction.getStoreId();
+        this.amount = transaction.getAmountValue();
+        this.transactionCode = transaction.getTransactionCode();
+        this.status = transaction.getStatus().name();
+        this.createdAt = transaction.getCreatedAt();
+        this.updatedAt = transaction.getUpdatedAt();
+        this.cancelledAt = transaction.getCancelledAt();
+        this.refundReason = transaction.getRefundReason();
     }
 
     // Getters

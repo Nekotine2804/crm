@@ -7,7 +7,6 @@ com/sofitech/hoamaimart/transaction/domain/exception/TransactionNotFoundExceptio
 com/sofitech/hoamaimart/transaction/adapter/out/client/HttpCustomerClient.class
 com/sofitech/hoamaimart/transaction/domain/model/Transaction$Status.class
 com/sofitech/hoamaimart/transaction/domain/port/in/CreateTransactionCommandService.class
-com/sofitech/hoamaimart/transaction/adapter/out/client/HttpCustomerClient$CustomerStatusResponse.class
 com/sofitech/hoamaimart/transaction/domain/port/in/RefundTransactionService.class
 com/sofitech/hoamaimart/transaction/adapter/in/web/ErrorResponse.class
 com/sofitech/hoamaimart/transaction/adapter/in/web/dto/RefundRequest.class
@@ -24,6 +23,7 @@ com/sofitech/hoamaimart/transaction/config/AppConfig.class
 com/sofitech/hoamaimart/transaction/adapter/out/persistence/mapper/TransactionMapper.class
 com/sofitech/hoamaimart/transaction/config/OpenApiConfig.class
 com/sofitech/hoamaimart/transaction/adapter/out/messaging/RabbitMQEventPublisher.class
+com/sofitech/hoamaimart/transaction/adapter/out/client/HttpCustomerClient$CustomerResponse.class
 com/sofitech/hoamaimart/transaction/adapter/out/persistence/repository/TransactionJpaRepository.class
 com/sofitech/hoamaimart/transaction/adapter/in/web/dto/ErrorResponse.class
 com/sofitech/hoamaimart/transaction/domain/exception/InvalidTransactionStateException.class

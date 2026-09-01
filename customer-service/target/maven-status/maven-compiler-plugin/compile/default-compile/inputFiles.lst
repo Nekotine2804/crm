@@ -8,6 +8,7 @@
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/adapter/in/web/dto/ErrorResponse.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/adapter/in/web/dto/UpdateCustomerRequest.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/adapter/in/web/dto/UpdateCustomerResponse.java
+/home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/adapter/out/messaging/RabbitMQEventPublisher.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/adapter/out/persistence/entity/CustomerEntity.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/adapter/out/persistence/mapper/CustomerMapper.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/adapter/out/persistence/repository/CustomerJpaRepository.java
@@ -16,6 +17,7 @@
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/application/service/GetCustomerService.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/config/AppConfig.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/config/OpenApiConfig.java
+/home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/config/RabbitMQConfig.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/domain/exception/CustomerNotFoundException.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/domain/exception/PhoneAlreadyExistsException.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/domain/model/Customer.java
@@ -24,3 +26,4 @@
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/domain/port/in/CustomerCommandService.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/domain/port/in/CustomerQueryService.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/domain/port/out/CustomerRepository.java
+/home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/domain/port/out/EventPublisher.java

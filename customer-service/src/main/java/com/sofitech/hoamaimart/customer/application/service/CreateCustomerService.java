@@ -5,6 +5,7 @@ import com.sofitech.hoamaimart.customer.domain.exception.PhoneAlreadyExistsExcep
 import com.sofitech.hoamaimart.customer.domain.model.Customer;
 import com.sofitech.hoamaimart.customer.domain.port.in.CustomerCommandService;
 import com.sofitech.hoamaimart.customer.domain.port.out.CustomerRepository;
+import com.sofitech.hoamaimart.customer.domain.port.out.EventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +15,11 @@ import java.util.UUID;
 public class CreateCustomerService implements CustomerCommandService {
 
     private final CustomerRepository customerRepository;
+    private final EventPublisher eventPublisher;
 
-    public CreateCustomerService(CustomerRepository customerRepository) {
+    public CreateCustomerService(CustomerRepository customerRepository, EventPublisher eventPublisher) {
         this.customerRepository = customerRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -29,7 +32,9 @@ public class CreateCustomerService implements CustomerCommandService {
 
         Customer customer = Customer.create(phone, name);
 
-        return customerRepository.create(customer);
+        Customer savedCustomer = customerRepository.create(customer);
+        eventPublisher.publishCustomerCreated(savedCustomer);
+        return savedCustomer;
     }
 
     @Override

@@ -13,7 +13,6 @@ import java.util.UUID;
 public class LoyaltyAccountEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "customer_id", nullable = false, unique = true)
@@ -61,14 +60,19 @@ public class LoyaltyAccountEntity {
     public static LoyaltyAccountEntity fromDomain(LoyaltyAccount account) {
         LoyaltyAccountEntity entity = new LoyaltyAccountEntity();
         entity.id = account.getId();
-        entity.customerId = account.getCustomerId();
-        entity.points = account.getPoints().value();
-        entity.tier = account.getTier();
-        entity.pendingTier = account.getPendingTier();
-        entity.lastTierEvaluation = account.getLastTierEvaluation();
-        entity.createdAt = account.getCreatedAt();
-        entity.updatedAt = account.getUpdatedAt();
+        entity.updateFromDomain(account);
         return entity;
+    }
+
+    /** Updates a managed entity while retaining its optimistic-lock version. */
+    public void updateFromDomain(LoyaltyAccount account) {
+        this.customerId = account.getCustomerId();
+        this.points = account.getPoints().value();
+        this.tier = account.getTier();
+        this.pendingTier = account.getPendingTier();
+        this.lastTierEvaluation = account.getLastTierEvaluation();
+        this.createdAt = account.getCreatedAt();
+        this.updatedAt = account.getUpdatedAt();
     }
 
     // Getters

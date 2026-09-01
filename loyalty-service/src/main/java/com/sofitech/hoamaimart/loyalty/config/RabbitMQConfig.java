@@ -17,6 +17,7 @@ public class RabbitMQConfig {
     public static final String EXCHANGE = "hoamai.exchange";
     public static final String LOYALTY_TRANSACTION_QUEUE = "loyalty.transaction.queue";
     public static final String LOYALTY_REFUND_QUEUE = "loyalty.refund.queue";
+    public static final String LOYALTY_CUSTOMER_QUEUE = "loyalty.customer.queue";
 
     // TopicExchange
     @Bean
@@ -36,6 +37,11 @@ public class RabbitMQConfig {
         return QueueBuilder.durable(LOYALTY_REFUND_QUEUE).build();
     }
 
+    @Bean
+    public Queue loyaltyCustomerQueue() {
+        return QueueBuilder.durable(LOYALTY_CUSTOMER_QUEUE).build();
+    }
+
     // Binding: queue -> exchange với routing key
     @Bean
     public Binding loyaltyBinding(Queue loyaltyTransactionQueue, TopicExchange topicExchange) {
@@ -52,6 +58,11 @@ public class RabbitMQConfig {
                 .bind(loyaltyRefundQueue)
                 .to(topicExchange)
                 .with("transaction.refunded");
+    }
+
+    @Bean
+    public Binding loyaltyCustomerBinding(Queue loyaltyCustomerQueue, TopicExchange topicExchange) {
+        return BindingBuilder.bind(loyaltyCustomerQueue).to(topicExchange).with("customer.created");
     }
 
     // Message converter: serialize event thành JSON

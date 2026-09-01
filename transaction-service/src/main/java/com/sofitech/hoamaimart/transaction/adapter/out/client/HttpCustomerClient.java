@@ -44,19 +44,14 @@ public class HttpCustomerClient implements CustomerClient {
             return;
         }
 
-        String url = customerServiceUrl + "/api/v1/customers/" + customerId + "/status";
+        String url = customerServiceUrl + "/api/customers/" + customerId;
 
         try {
-            CustomerStatusResponse response = restTemplate.getForObject(url, CustomerStatusResponse.class);
+            CustomerResponse response = restTemplate.getForObject(url, CustomerResponse.class);
 
-            if (response == null) {
+            if (response == null || !customerId.equals(response.customerId())) {
                 throw BusinessException.of(BusinessErrorCode.CUSTOMER_NOT_FOUND,
                         "Customer không tồn tại: " + customerId);
-            }
-
-            if (!"ACTIVE".equals(response.status())) {
-                throw BusinessException.of(BusinessErrorCode.CUSTOMER_INACTIVE,
-                        "Customer không ACTIVE: " + customerId + " (status=" + response.status() + ")");
             }
 
         } catch (HttpClientErrorException.NotFound e) {
@@ -72,7 +67,8 @@ public class HttpCustomerClient implements CustomerClient {
     }
 
     /**
-     * Inner response DTO - chỉ cần status.
+     * Customer-service hiện chưa quản lý trạng thái active/inactive.
+     * Một response hợp lệ từ endpoint query xác nhận customer tồn tại.
      */
-    public record CustomerStatusResponse(String status) {}
+    public record CustomerResponse(UUID customerId) {}
 }

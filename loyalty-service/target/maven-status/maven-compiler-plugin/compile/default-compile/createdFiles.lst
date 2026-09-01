@@ -29,5 +29,6 @@ com/sofitech/hoamaimart/loyalty/adapter/out/persistence/repository/LoyaltyJpaRep
 com/sofitech/hoamaimart/loyalty/adapter/out/persistence/repository/LoyaltyRepositoryAdapter.class
 com/sofitech/hoamaimart/loyalty/adapter/out/persistence/entity/PointTransactionEntity.class
 com/sofitech/hoamaimart/loyalty/adapter/out/persistence/repository/SpendingHistoryJpaRepository.class
+com/sofitech/hoamaimart/loyalty/adapter/in/messaging/CustomerEventListener.class
 com/sofitech/hoamaimart/loyalty/domain/model/Points.class
 com/sofitech/hoamaimart/loyalty/adapter/in/web/LoyaltyController.class

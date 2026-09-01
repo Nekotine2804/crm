@@ -12,6 +12,7 @@ import com.sofitech.hoamaimart.shared.error.BusinessException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Application service: xử lý use case loyalty.
@@ -23,6 +24,13 @@ public class LoyaltyService implements LoyaltyCommandService {
 
     public LoyaltyService(LoyaltyRepository loyaltyRepository) {
         this.loyaltyRepository = loyaltyRepository;
+    }
+
+    /** Creates the initial account once; safe when an event is redelivered. */
+    @Transactional
+    public LoyaltyAccount ensureAccount(UUID customerId) {
+        return loyaltyRepository.findByCustomerId(customerId)
+                .orElseGet(() -> loyaltyRepository.save(LoyaltyAccount.createNew(customerId)));
     }
 
     @Override

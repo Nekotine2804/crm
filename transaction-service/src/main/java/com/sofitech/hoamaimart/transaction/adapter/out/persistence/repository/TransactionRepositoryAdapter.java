@@ -6,6 +6,7 @@ import com.sofitech.hoamaimart.transaction.domain.port.out.TransactionRepository
 
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Adapter OUT: implement TransactionRepository dùng JPA.
@@ -20,8 +21,14 @@ public class TransactionRepositoryAdapter implements TransactionRepository {
     }
 
     @Override
+    @Transactional
     public Transaction save(Transaction transaction) {
-        TransactionEntity entity = TransactionEntity.fromDomain(transaction);
+        TransactionEntity entity = jpaRepository.findById(transaction.getId())
+                .map(existing -> {
+                    existing.updateFromDomain(transaction);
+                    return existing;
+                })
+                .orElseGet(() -> TransactionEntity.fromDomain(transaction));
         return jpaRepository.save(entity).toDomain();
     }
 

@@ -4,10 +4,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * Event published when a transaction (receipt/invoice) is completed at POS.
- * Consumed by loyalty-service to calculate and award loyalty points.
- */
+
 public class TransactionCompletedEvent implements DomainEvent {
 
     private final UUID eventId;

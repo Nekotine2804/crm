@@ -7,6 +7,7 @@ import com.sofitech.hoamaimart.customer.application.service.GetCustomerService;
 import com.sofitech.hoamaimart.customer.domain.port.in.CustomerCommandService;
 import com.sofitech.hoamaimart.customer.domain.port.in.CustomerQueryService;
 import com.sofitech.hoamaimart.customer.domain.port.out.CustomerRepository;
+import com.sofitech.hoamaimart.customer.domain.port.out.EventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,8 +20,8 @@ public class AppConfig {
     }
 
     @Bean
-    public CustomerCommandService customerCommandService(CustomerRepository repository) {
-        return new CreateCustomerService(repository);
+    public CustomerCommandService customerCommandService(CustomerRepository repository, EventPublisher eventPublisher) {
+        return new CreateCustomerService(repository, eventPublisher);
     }
 
     @Bean
