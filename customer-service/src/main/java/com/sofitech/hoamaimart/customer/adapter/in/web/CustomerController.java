@@ -6,6 +6,12 @@ import com.sofitech.hoamaimart.customer.adapter.in.web.dto.ErrorResponse;
 import com.sofitech.hoamaimart.customer.domain.exception.PhoneAlreadyExistsException;
 import com.sofitech.hoamaimart.customer.domain.model.Customer;
 import com.sofitech.hoamaimart.customer.domain.port.in.CustomerCommandService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/customers")
+@Tag(name = "Customers", description = "Customer management endpoints")
 public class CustomerController {
 
     private final CustomerCommandService customerCommandService;
@@ -27,6 +34,14 @@ public class CustomerController {
     /**
      * POST /api/customers - Tạo khách hàng mới.
      */
+    @Operation(summary = "Create a new customer", description = "Creates a new customer with phone and name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Customer created successfully"),
+            @ApiResponse(responseCode = "400", description = "Validation error",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Phone number already exists",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping
     public ResponseEntity<?> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
         try {

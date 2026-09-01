@@ -1,9 +1,6 @@
 package com.sofitech.hoamaimart.shared.error;
 
-/**
- * Business Exception - exception có gắn BusinessErrorCode.
- * Global Exception Handler sẽ convert thành ErrorResponse chuẩn.
- */
+
 public class BusinessException extends RuntimeException {
 
     private final BusinessErrorCode errorCode;
