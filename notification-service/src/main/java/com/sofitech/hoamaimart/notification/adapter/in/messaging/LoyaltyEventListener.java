@@ -10,14 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-/**
- * Adapter IN: lắng nghe events từ RabbitMQ.
- */
 @Component
 public class LoyaltyEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(LoyaltyEventListener.class);
-
     private final NotificationService notificationService;
 
     public LoyaltyEventListener(NotificationService notificationService) {
@@ -28,7 +24,6 @@ public class LoyaltyEventListener {
     public void handlePointsEarned(PointsEarnedEvent event) {
         log.info("Received points.earned event for customer {}: {} points",
                 event.getCustomerId(), event.getEarnedPoints());
-
         notificationService.sendPointsEarnedNotification(
                 event.getCustomerId(),
                 event.getEarnedPoints(),
@@ -40,7 +35,6 @@ public class LoyaltyEventListener {
     public void handleTierUpgraded(TierUpgradedEvent event) {
         log.info("Received tier.upgraded event for customer {}: {} -> {}",
                 event.getCustomerId(), event.getOldTier(), event.getNewTier());
-
         notificationService.sendTierUpgradeNotification(
                 event.getCustomerId(),
                 event.getNewTier()
@@ -51,7 +45,6 @@ public class LoyaltyEventListener {
     public void handlePointsRedeemed(PointsRedeemedEvent event) {
         log.info("Received points.redeemed event for customer {}: {} points for {}",
                 event.getCustomerId(), event.getRedeemedPoints(), event.getReward());
-
         notificationService.sendRedeemSuccessNotification(
                 event.getCustomerId(),
                 event.getRedeemedPoints(),
@@ -64,7 +57,6 @@ public class LoyaltyEventListener {
     public void handleRefund(TransactionRefundedEvent event) {
         log.info("Received refund event for customer {}: transaction {}",
                 event.getCustomerId(), event.getTransactionCode());
-
         notificationService.sendRefundNotification(
                 event.getCustomerId(),
                 event.getTransactionCode(),

@@ -1,5 +1,10 @@
 README.md
 
+## Diagrams
+
+- [System Architecture, Use Case, Sequence, Activity, DFD và ERD](docs/diagrams/system-diagrams.md)
+- [Loyalty flow và tier evaluation](docs/diagrams/loyalty-flow.md)
+
 
 POC Loyalty & CRM Bán lẻ
 1. Mục tiêu dự án

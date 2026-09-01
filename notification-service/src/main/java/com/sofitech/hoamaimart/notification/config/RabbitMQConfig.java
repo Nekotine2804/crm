@@ -8,19 +8,10 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * RabbitMQ configuration cho notification-service.
- */
 @Configuration
 public class RabbitMQConfig {
 
     public static final String EXCHANGE = "hoamai.exchange";
-
-    // Queues
-    public static final String POINTS_EARNED_QUEUE = "notification.points.earned.queue";
-    public static final String TIER_UPGRADED_QUEUE = "notification.tier.upgraded.queue";
-    public static final String POINTS_REDEEMED_QUEUE = "notification.points.redeemed.queue";
-    public static final String REFUND_QUEUE = "notification.refund.queue";
 
     @Bean
     public TopicExchange topicExchange() {
@@ -29,42 +20,42 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue pointsEarnedQueue() {
-        return QueueBuilder.durable(POINTS_EARNED_QUEUE).build();
+        return QueueBuilder.durable("notification.points.earned.queue").build();
     }
 
     @Bean
     public Queue tierUpgradedQueue() {
-        return QueueBuilder.durable(TIER_UPGRADED_QUEUE).build();
+        return QueueBuilder.durable("notification.tier.upgraded.queue").build();
     }
 
     @Bean
     public Queue pointsRedeemedQueue() {
-        return QueueBuilder.durable(POINTS_REDEEMED_QUEUE).build();
+        return QueueBuilder.durable("notification.points.redeemed.queue").build();
     }
 
     @Bean
     public Queue refundQueue() {
-        return QueueBuilder.durable(REFUND_QUEUE).build();
+        return QueueBuilder.durable("notification.refund.queue").build();
     }
 
     @Bean
-    public Binding pointsEarnedBinding(Queue pointsEarnedQueue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(pointsEarnedQueue).to(topicExchange).with("loyalty.points.earned");
+    public Binding pointsEarnedBinding() {
+        return BindingBuilder.bind(pointsEarnedQueue()).to(topicExchange()).with("loyalty.points.earned");
     }
 
     @Bean
-    public Binding tierUpgradedBinding(Queue tierUpgradedQueue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(tierUpgradedQueue).to(topicExchange).with("loyalty.tier.upgraded");
+    public Binding tierUpgradedBinding() {
+        return BindingBuilder.bind(tierUpgradedQueue()).to(topicExchange()).with("loyalty.tier.upgraded");
     }
 
     @Bean
-    public Binding pointsRedeemedBinding(Queue pointsRedeemedQueue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(pointsRedeemedQueue).to(topicExchange).with("loyalty.points.redeemed");
+    public Binding pointsRedeemedBinding() {
+        return BindingBuilder.bind(pointsRedeemedQueue()).to(topicExchange()).with("loyalty.points.redeemed");
     }
 
     @Bean
-    public Binding refundBinding(Queue refundQueue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(refundQueue).to(topicExchange).with("transaction.refunded");
+    public Binding refundBinding() {
+        return BindingBuilder.bind(refundQueue()).to(topicExchange()).with("transaction.refunded");
     }
 
     @Bean

@@ -2,7 +2,6 @@ package com.sofitech.hoamaimart.notification.adapter.out.persistence.repository;
 
 import com.sofitech.hoamaimart.notification.adapter.out.persistence.entity.NotificationEntity;
 import com.sofitech.hoamaimart.notification.domain.model.Notification;
-import com.sofitech.hoamaimart.notification.domain.model.NotificationStatus;
 import com.sofitech.hoamaimart.notification.domain.model.NotificationType;
 import com.sofitech.hoamaimart.notification.domain.port.out.NotificationRepository;
 import org.springframework.stereotype.Repository;
@@ -10,9 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Adapter OUT: implement NotificationRepository dùng JPA.
- */
 @Repository
 public class NotificationRepositoryAdapter implements NotificationRepository {
 
@@ -38,7 +34,7 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
 
     @Override
     public List<Notification> findByCustomerIdAndType(UUID customerId, NotificationType type) {
-        return jpaRepository.findByCustomerIdAndTypeOrderByCreatedAtDesc(customerId, type)
+        return jpaRepository.findByCustomerIdAndTypeOrderByCreatedAtDesc(customerId, type.name())
                 .stream()
                 .map(NotificationEntity::toDomain)
                 .toList();
@@ -46,6 +42,6 @@ public class NotificationRepositoryAdapter implements NotificationRepository {
 
     @Override
     public long countUnreadByCustomerId(UUID customerId) {
-        return jpaRepository.countByCustomerIdAndStatusNot(customerId, NotificationStatus.READ);
+        return jpaRepository.countByCustomerIdAndStatusNot(customerId, "READ");
     }
 }

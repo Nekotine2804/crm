@@ -9,6 +9,7 @@
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/adapter/in/web/dto/PointHistoryResponse.java
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/adapter/in/web/dto/RedeemRequest.java
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/adapter/in/web/dto/RedeemResponse.java
+/home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/adapter/out/messaging/LoyaltyEventPublisher.java
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/adapter/out/persistence/entity/LoyaltyAccountEntity.java
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/adapter/out/persistence/entity/PointTransactionEntity.java
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/adapter/out/persistence/entity/SpendingHistoryEntity.java
