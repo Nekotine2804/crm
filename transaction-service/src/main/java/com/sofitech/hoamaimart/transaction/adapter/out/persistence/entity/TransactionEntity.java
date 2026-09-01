@@ -40,6 +40,15 @@ public class TransactionEntity {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Column(name = "updated_at")
+    private Instant updatedAt;
+
+    @Column(name = "cancelled_at")
+    private Instant cancelledAt;
+
+    @Column(name = "refund_reason", length = 255)
+    private String refundReason;
+
     protected TransactionEntity() {}
 
     public TransactionEntity(UUID id, UUID customerId, String storeId, BigDecimal amount,
@@ -51,9 +60,11 @@ public class TransactionEntity {
         this.transactionCode = transactionCode;
         this.status = status;
         this.createdAt = createdAt;
+        this.updatedAt = createdAt;
     }
 
     public Transaction toDomain() {
+        // Rebuild domain object with all fields
         return new Transaction(
                 this.id,
                 this.customerId,
@@ -66,7 +77,7 @@ public class TransactionEntity {
     }
 
     public static TransactionEntity fromDomain(Transaction transaction) {
-        return new TransactionEntity(
+        TransactionEntity entity = new TransactionEntity(
                 transaction.getId(),
                 transaction.getCustomerId(),
                 transaction.getStoreId(),
@@ -75,6 +86,10 @@ public class TransactionEntity {
                 transaction.getStatus().name(),
                 transaction.getCreatedAt()
         );
+        entity.updatedAt = transaction.getUpdatedAt();
+        entity.cancelledAt = transaction.getCancelledAt();
+        entity.refundReason = transaction.getRefundReason();
+        return entity;
     }
 
     // Getters
@@ -85,4 +100,7 @@ public class TransactionEntity {
     public String getTransactionCode() { return transactionCode; }
     public String getStatus() { return status; }
     public Instant getCreatedAt() { return createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
+    public Instant getCancelledAt() { return cancelledAt; }
+    public String getRefundReason() { return refundReason; }
 }

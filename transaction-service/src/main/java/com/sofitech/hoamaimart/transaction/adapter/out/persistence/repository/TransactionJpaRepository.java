@@ -20,4 +20,9 @@ public interface TransactionJpaRepository extends JpaRepository<TransactionEntit
      * Idempotency check: tìm transaction theo mã POS gửi.
      */
     Optional<TransactionEntity> findByTransactionCode(String transactionCode);
+
+    /**
+     * Idempotency check: kiểm tra transaction đã tồn tại chưa.
+     */
+    boolean existsByTransactionCode(String transactionCode);
 }

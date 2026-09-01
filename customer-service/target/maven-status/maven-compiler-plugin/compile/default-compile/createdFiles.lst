@@ -8,14 +8,17 @@ com/sofitech/hoamaimart/customer/domain/port/in/CustomerCommandService.class
 com/sofitech/hoamaimart/customer/adapter/in/web/dto/CreateCustomerResponse.class
 com/sofitech/hoamaimart/customer/adapter/in/web/dto/CreateCustomerRequest.class
 com/sofitech/hoamaimart/customer/adapter/in/web/CustomerQueryController.class
+com/sofitech/hoamaimart/customer/adapter/in/web/dto/UpdateCustomerResponse.class
 com/sofitech/hoamaimart/customer/adapter/in/web/CustomerController.class
 com/sofitech/hoamaimart/customer/adapter/out/persistence/repository/CustomerJpaRepository.class
 com/sofitech/hoamaimart/customer/domain/port/out/CustomerRepository.class
 com/sofitech/hoamaimart/customer/config/AppConfig.class
+com/sofitech/hoamaimart/customer/domain/exception/CustomerNotFoundException.class
 com/sofitech/hoamaimart/customer/domain/exception/PhoneAlreadyExistsException.class
 com/sofitech/hoamaimart/customer/application/service/GetCustomerService.class
 com/sofitech/hoamaimart/customer/domain/port/in/CustomerQueryService.class
 com/sofitech/hoamaimart/customer/adapter/out/persistence/repository/CustomerRepositoryAdapter.class
+com/sofitech/hoamaimart/customer/adapter/in/web/dto/UpdateCustomerRequest.class
 com/sofitech/hoamaimart/customer/domain/model/Customer.class
 com/sofitech/hoamaimart/customer/application/service/CreateCustomerService.class
 com/sofitech/hoamaimart/customer/adapter/out/persistence/mapper/CustomerMapper.class

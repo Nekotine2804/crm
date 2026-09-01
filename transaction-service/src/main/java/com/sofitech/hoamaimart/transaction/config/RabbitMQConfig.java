@@ -5,26 +5,38 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * RabbitMQ configuration: exchange + queue cho transaction events.
+ * RabbitMQ configuration: exchange + queue cho transaction-service.
  */
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${app.rabbitmq.exchange:hoamai.exchange}")
-    private String exchange;
+    public static final String EXCHANGE = "hoamai.exchange";
+    
+    // Queues
+    public static final String TRANSACTION_COMPLETED_QUEUE = "transaction.completed.queue";
 
-    // Exchange
     @Bean
-    public TopicExchange transactionExchange() {
-        return new TopicExchange(exchange);
+    public TopicExchange topicExchange() {
+        return new TopicExchange(EXCHANGE);
     }
 
-    // Message converter: serialize event thành JSON
+    @Bean
+    public Queue transactionCompletedQueue() {
+        return QueueBuilder.durable(TRANSACTION_COMPLETED_QUEUE).build();
+    }
+
+    @Bean
+    public Binding transactionCompletedBinding(Queue transactionCompletedQueue, TopicExchange topicExchange) {
+        return BindingBuilder
+                .bind(transactionCompletedQueue)
+                .to(topicExchange)
+                .with("transaction.completed");
+    }
+
     @Bean
     public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();

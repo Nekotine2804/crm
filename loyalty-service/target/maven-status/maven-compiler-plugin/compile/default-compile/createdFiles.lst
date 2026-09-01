@@ -21,6 +21,7 @@ com/sofitech/hoamaimart/loyalty/config/GlobalExceptionHandler.class
 com/sofitech/hoamaimart/loyalty/adapter/in/web/dto/RedeemResponse.class
 com/sofitech/hoamaimart/loyalty/adapter/out/persistence/repository/PointTransactionJpaRepository.class
 com/sofitech/hoamaimart/loyalty/application/service/TierEvaluationScheduler.class
+com/sofitech/hoamaimart/loyalty/adapter/in/messaging/RefundEventListener.class
 com/sofitech/hoamaimart/loyalty/adapter/in/messaging/TransactionEventListener.class
 com/sofitech/hoamaimart/loyalty/domain/port/out/PointTransactionRepository.class
 com/sofitech/hoamaimart/loyalty/config/RabbitMQConfig.class

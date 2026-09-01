@@ -27,23 +27,20 @@ public class LoyaltyService implements LoyaltyCommandService {
 
     @Override
     public void addPoints(UUID customerId, BigDecimal transactionAmount) {
-        // 1. Idempotency check - kiểm tra đã tích điểm cho transaction này chưa
-        // (Được gọi từ event listener, nên cần check)
-        
-        // 2. Tìm hoặc tạo loyalty account
+        // 1. Tìm hoặc tạo loyalty account
         LoyaltyAccount account = loyaltyRepository.findByCustomerId(customerId)
                 .orElseGet(() -> LoyaltyAccount.createNew(customerId));
 
-        // 3. Tính điểm earned
+        // 2. Tính điểm earned
         Points earnedPoints = Points.fromAmount(transactionAmount);
         
-        // 4. Cập nhật points trong account
+        // 3. Cập nhật points trong account
         if (!earnedPoints.isZero()) {
             account.addPointsFromTransaction(transactionAmount);
         }
 
-        // 5. Ghi lịch sử chi tiêu cho rolling window
-        UUID transactionId = UUID.randomUUID(); // TODO: nhận từ event
+        // 4. Ghi lịch sử chi tiêu cho rolling window
+        UUID transactionId = UUID.randomUUID();
         loyaltyRepository.recordSpending(
                 customerId,
                 transactionId,
@@ -51,11 +48,11 @@ public class LoyaltyService implements LoyaltyCommandService {
                 Instant.now()
         );
 
-        // 6. Đánh giá tier
+        // 5. Đánh giá tier
         BigDecimal rollingSpending = loyaltyRepository.calculateRollingWindowSpending(customerId);
         account.evaluateTier(rollingSpending.longValue());
 
-        // 7. Lưu account
+        // 6. Lưu account
         loyaltyRepository.save(account);
     }
 
@@ -89,7 +86,7 @@ public class LoyaltyService implements LoyaltyCommandService {
 
     /**
      * Ghi nhận tích điểm từ transaction (có idempotency check).
-     * @return PointTransaction đã tạo, hoặc empty nếu đã tồn tại
+     * @return PointTransaction đã tạo, hoặc null nếu đã tồn tại
      */
     public PointTransaction earnPoints(
             UUID customerId, 
@@ -99,8 +96,7 @@ public class LoyaltyService implements LoyaltyCommandService {
         // 1. Idempotency check
         if (loyaltyRepository.existsPointTransactionByReferenceIdAndType(
                 transactionId, PointTransactionType.EARN)) {
-            // Đã tích điểm cho transaction này rồi
-            return null;
+            return null; // Đã tích điểm cho transaction này rồi
         }
 
         // 2. Tìm hoặc tạo loyalty account
@@ -109,8 +105,6 @@ public class LoyaltyService implements LoyaltyCommandService {
 
         // 3. Tính điểm earned
         Points earnedPoints = Points.fromAmount(amount);
-        
-        int oldBalance = account.getPoints().value();
         
         // 4. Cập nhật points trong account
         if (!earnedPoints.isZero()) {
@@ -147,7 +141,6 @@ public class LoyaltyService implements LoyaltyCommandService {
 
     /**
      * Ghi nhận đổi điểm.
-     * @return PointTransaction đã tạo
      */
     public PointTransaction recordRedeem(
             UUID customerId,
@@ -178,6 +171,54 @@ public class LoyaltyService implements LoyaltyCommandService {
                 pointsToRedeem,
                 savedAccount.getPoints().value(),
                 redemptionId
+        );
+
+        return loyaltyRepository.savePointTransaction(pointTransaction);
+    }
+
+    /**
+     * Hoàn điểm loyalty khi transaction được refund.
+     */
+    public PointTransaction refundPoints(
+            UUID customerId,
+            String originalTransactionCode,
+            BigDecimal refundAmount
+    ) {
+        // 1. Kiểm tra đã có refund cho transaction này chưa
+        if (loyaltyRepository.existsPointTransactionByReferenceIdAndType(
+                originalTransactionCode, PointTransactionType.REFUND)) {
+            return null; // Đã refund rồi
+        }
+
+        // 2. Tìm tài khoản
+        LoyaltyAccount account = loyaltyRepository.findByCustomerId(customerId)
+                .orElse(null); // Khách không có tài khoản loyalty thì không cần refund
+
+        if (account == null) {
+            return null;
+        }
+
+        // 3. Tính điểm đã tích từ transaction này
+        Points refundPoints = Points.fromAmount(refundAmount);
+
+        // 4. Trừ điểm (vì refund = hoàn tiền = không được tích điểm)
+        try {
+            account.redeem(refundPoints);
+        } catch (IllegalArgumentException e) {
+            // Không đủ điểm để trừ - có thể đã đổi hết rồi
+            // Vẫn ghi nhận refund transaction
+        }
+
+        // 5. Lưu account
+        LoyaltyAccount savedAccount = loyaltyRepository.save(account);
+
+        // 6. Tạo và lưu refund point transaction
+        PointTransaction pointTransaction = PointTransaction.refund(
+                savedAccount.getId(),
+                customerId,
+                refundPoints.value(),
+                savedAccount.getPoints().value(),
+                originalTransactionCode
         );
 
         return loyaltyRepository.savePointTransaction(pointTransaction);

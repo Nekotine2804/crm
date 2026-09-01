@@ -5,12 +5,17 @@ import com.sofitech.hoamaimart.customer.adapter.in.web.dto.CustomerVO;
 import com.sofitech.hoamaimart.customer.domain.port.in.CustomerQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -22,6 +27,9 @@ import java.util.UUID;
 public class CustomerQueryController {
 
     private final CustomerQueryService customerQueryService;
+    
+    @Value("${services.loyalty.url:http://localhost:8082}")
+    private String loyaltyServiceUrl;
 
     public CustomerQueryController(CustomerQueryService customerQueryService) {
         this.customerQueryService = customerQueryService;
@@ -63,11 +71,6 @@ public class CustomerQueryController {
 
     /**
      * GET /api/customers/check?phone=xxx - Kiểm tra khách đã tồn tại chưa.
-     * Dùng cho POS: nhanh, nhẹ, không cần full data.
-     *
-     * Response 200:
-     * { "phone": "0912345678", "exists": true, "customerId": "..." }
-     * { "phone": "0912345678", "exists": false, "customerId": null }
      */
     @Operation(summary = "Check if customer exists", description = "Quick check if a customer exists by phone number (for POS)")
     @ApiResponses(value = {
@@ -84,5 +87,33 @@ public class CustomerQueryController {
                             CustomerExistsResponse.notFound(phone)));
         }
         return ResponseEntity.ok(CustomerExistsResponse.notFound(phone));
+    }
+
+    /**
+     * GET /api/customers/{id}/points/history - Lấy lịch sử điểm loyalty.
+     * Proxy request sang loyalty-service.
+     */
+    @Operation(summary = "Get point transaction history", description = "Retrieves loyalty point transaction history for a customer (proxies to loyalty-service)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Point history retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Customer or loyalty account not found"),
+            @ApiResponse(responseCode = "502", description = "Loyalty service unavailable")
+    })
+    @GetMapping("/{id}/points/history")
+    public ResponseEntity<?> getPointHistory(
+            @Parameter(description = "Customer UUID") @PathVariable UUID id) {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = loyaltyServiceUrl + "/api/v1/customers/" + id + "/loyalty/points/history";
+            var response = restTemplate.getForEntity(url, Object.class);
+            return ResponseEntity.ok(response.getBody());
+        } catch (Exception e) {
+            return ResponseEntity.status(502)
+                    .body(Map.of(
+                            "code", "LOYALTY_SERVICE_ERROR",
+                            "message", "Không thể lấy lịch sử điểm: " + e.getMessage(),
+                            "status", 502
+                    ));
+        }
     }
 }

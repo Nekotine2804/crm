@@ -2,11 +2,12 @@ package com.sofitech.hoamaimart.transaction.config;
 
 import com.sofitech.hoamaimart.transaction.adapter.out.client.HttpCustomerClient;
 import com.sofitech.hoamaimart.transaction.adapter.out.messaging.RabbitMQEventPublisher;
-import com.sofitech.hoamaimart.transaction.adapter.out.persistence.mapper.TransactionMapper;
 import com.sofitech.hoamaimart.transaction.adapter.out.persistence.repository.TransactionJpaRepository;
 import com.sofitech.hoamaimart.transaction.adapter.out.persistence.repository.TransactionRepositoryAdapter;
 import com.sofitech.hoamaimart.transaction.application.service.CreateTransactionService;
+import com.sofitech.hoamaimart.transaction.application.service.RefundTransactionServiceImpl;
 import com.sofitech.hoamaimart.transaction.domain.port.in.CreateTransactionCommandService;
+import com.sofitech.hoamaimart.transaction.domain.port.in.RefundTransactionService;
 import com.sofitech.hoamaimart.transaction.domain.port.out.CustomerClient;
 import com.sofitech.hoamaimart.transaction.domain.port.out.EventPublisher;
 import com.sofitech.hoamaimart.transaction.domain.port.out.TransactionRepository;
@@ -20,11 +21,8 @@ import org.springframework.web.client.RestTemplate;
 public class AppConfig {
 
     @Bean
-    public TransactionRepository transactionRepository(
-            TransactionJpaRepository jpaRepository,
-            TransactionMapper mapper
-    ) {
-        return new TransactionRepositoryAdapter(jpaRepository, mapper);
+    public TransactionRepository transactionRepository(TransactionJpaRepository jpaRepository) {
+        return new TransactionRepositoryAdapter(jpaRepository);
     }
 
     @Bean
@@ -47,5 +45,13 @@ public class AppConfig {
             CustomerClient customerClient
     ) {
         return new CreateTransactionService(repository, eventPublisher, customerClient);
+    }
+
+    @Bean
+    public RefundTransactionService refundTransactionService(
+            TransactionRepository transactionRepository,
+            EventPublisher eventPublisher
+    ) {
+        return new RefundTransactionServiceImpl(transactionRepository, eventPublisher);
     }
 }

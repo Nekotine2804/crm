@@ -2,6 +2,8 @@ package com.sofitech.hoamaimart.customer.domain.port.in;
 
 import com.sofitech.hoamaimart.customer.domain.model.Customer;
 
+import java.util.UUID;
+
 /**
  * Port IN: command service interface - use case cho customer.
  * Implement bởi application layer.
@@ -16,4 +18,15 @@ public interface CustomerCommandService {
      * @throws PhoneAlreadyExistsException nếu SĐT đã tồn tại
      */
     Customer createCustomer(String phone, String name);
+
+    /**
+     * Cập nhật thông tin khách hàng.
+     * @param id Customer ID
+     * @param phone SĐT mới (nullable)
+     * @param name Tên mới (nullable)
+     * @return Customer đã được cập nhật
+     * @throws CustomerNotFoundException nếu không tìm thấy
+     * @throws PhoneAlreadyExistsException nếu SĐT đã tồn tại (khi đổi SĐT)
+     */
+    Customer updateCustomer(UUID id, String phone, String name);
 }

@@ -2,12 +2,11 @@ package com.sofitech.hoamaimart.transaction.domain.port.out;
 
 import com.sofitech.hoamaimart.transaction.domain.model.Transaction;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Port OUT: repository interface.
+ * Port OUT: repository interface - được implement bởi adapter persistence.
  */
 public interface TransactionRepository {
 
@@ -15,10 +14,7 @@ public interface TransactionRepository {
 
     Optional<Transaction> findById(UUID id);
 
-    List<Transaction> findByCustomerId(UUID customerId);
-
-    /**
-     * Idempotency: tìm theo transactionCode do POS cung cấp.
-     */
     Optional<Transaction> findByTransactionCode(String transactionCode);
+
+    boolean existsByTransactionCode(String transactionCode);
 }

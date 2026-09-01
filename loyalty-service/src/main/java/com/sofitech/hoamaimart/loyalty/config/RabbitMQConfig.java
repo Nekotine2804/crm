@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     public static final String EXCHANGE = "hoamai.exchange";
-    public static final String QUEUE = "loyalty.transaction.queue";
-    public static final String ROUTING_KEY = "transaction.completed";
+    public static final String LOYALTY_TRANSACTION_QUEUE = "loyalty.transaction.queue";
+    public static final String LOYALTY_REFUND_QUEUE = "loyalty.refund.queue";
 
     // TopicExchange
     @Bean
@@ -24,19 +24,34 @@ public class RabbitMQConfig {
         return new TopicExchange(EXCHANGE);
     }
 
-    // Queue
+    // Queue for transaction completed events
     @Bean
-    public Queue loyaltyQueue() {
-        return QueueBuilder.durable(QUEUE).build();
+    public Queue loyaltyTransactionQueue() {
+        return QueueBuilder.durable(LOYALTY_TRANSACTION_QUEUE).build();
+    }
+
+    // Queue for refund events
+    @Bean
+    public Queue loyaltyRefundQueue() {
+        return QueueBuilder.durable(LOYALTY_REFUND_QUEUE).build();
     }
 
     // Binding: queue -> exchange với routing key
     @Bean
-    public Binding loyaltyBinding(Queue loyaltyQueue, TopicExchange topicExchange) {
+    public Binding loyaltyBinding(Queue loyaltyTransactionQueue, TopicExchange topicExchange) {
         return BindingBuilder
-                .bind(loyaltyQueue)
+                .bind(loyaltyTransactionQueue)
                 .to(topicExchange)
-                .with(ROUTING_KEY);
+                .with("transaction.completed");
+    }
+
+    // Binding for refund events
+    @Bean
+    public Binding loyaltyRefundBinding(Queue loyaltyRefundQueue, TopicExchange topicExchange) {
+        return BindingBuilder
+                .bind(loyaltyRefundQueue)
+                .to(topicExchange)
+                .with("transaction.refunded");
     }
 
     // Message converter: serialize event thành JSON

@@ -12,10 +12,10 @@ import java.util.UUID;
 public class Customer {
 
     private final UUID id;
-    private final PhoneNumber phone;
-    private final CustomerName name;
-    private final Instant createdAt;
-    private final Instant updatedAt;
+    private PhoneNumber phone;
+    private CustomerName name;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     public Customer(UUID id, PhoneNumber phone, CustomerName name, Instant createdAt, Instant updatedAt) {
         this.id = id;
@@ -39,7 +39,30 @@ public class Customer {
         );
     }
 
-    // Getters - trả về Value Object
+    /**
+     * Update thông tin customer.
+     */
+    public void update(String phone, String name) {
+        if (phone != null && !phone.isBlank()) {
+            this.phone = PhoneNumber.of(phone);
+        }
+        if (name != null && !name.isBlank()) {
+            this.name = CustomerName.of(name);
+        }
+        this.updatedAt = Instant.now();
+    }
+
+    /**
+     * Update chỉ name.
+     */
+    public void updateName(String name) {
+        if (name != null && !name.isBlank()) {
+            this.name = CustomerName.of(name);
+        }
+        this.updatedAt = Instant.now();
+    }
+
+    // Getters
     public UUID getId() {
         return id;
     }

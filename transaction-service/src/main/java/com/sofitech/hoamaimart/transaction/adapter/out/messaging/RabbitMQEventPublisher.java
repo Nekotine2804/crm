@@ -1,6 +1,7 @@
 package com.sofitech.hoamaimart.transaction.adapter.out.messaging;
 
 import com.sofitech.hoamaimart.shared.event.TransactionCompletedEvent;
+import com.sofitech.hoamaimart.shared.event.TransactionRefundedEvent;
 import com.sofitech.hoamaimart.transaction.domain.model.Transaction;
 import com.sofitech.hoamaimart.transaction.domain.port.out.EventPublisher;
 import org.slf4j.Logger;
@@ -39,10 +40,26 @@ public class RabbitMQEventPublisher implements EventPublisher {
                 transaction.getCreatedAt()
         );
 
-        // Routing key = event type
         rabbitTemplate.convertAndSend(exchange, event.eventType(), event);
 
         log.info("Published transaction.completed event: transactionId={}, transactionCode={}, customerId={}, amount={}",
+                transaction.getId(), transaction.getTransactionCode(), transaction.getCustomerId(), transaction.getAmountValue());
+    }
+
+    @Override
+    public void publishTransactionRefunded(Transaction transaction, String reason) {
+        TransactionRefundedEvent event = new TransactionRefundedEvent(
+                transaction.getId(),
+                transaction.getTransactionCode(),
+                transaction.getCustomerId(),
+                transaction.getStoreId(),
+                transaction.getAmountValue(),
+                reason
+        );
+
+        rabbitTemplate.convertAndSend(exchange, event.eventType(), event);
+
+        log.info("Published transaction.refunded event: transactionId={}, transactionCode={}, customerId={}, amount={}",
                 transaction.getId(), transaction.getTransactionCode(), transaction.getCustomerId(), transaction.getAmountValue());
     }
 }
