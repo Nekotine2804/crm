@@ -54,8 +54,3 @@ services:
       POSTGRES_USER: crm_user
       POSTGRES_PASSWORD: change-me
     ports: ["5445:5432"]
-
-  # ---------- API Gateway ----------
-  # KHÔNG còn ở đây: api-gateway giờ là 1 Spring Boot app (module api-gateway/),
-  # chạy bằng "mvn spring-boot:run" hoặc build image riêng như các service khác,
-  # không phải 1 hạ tầng ngoài như Kong. Xem api-gateway/src/main/resources/application.yml.

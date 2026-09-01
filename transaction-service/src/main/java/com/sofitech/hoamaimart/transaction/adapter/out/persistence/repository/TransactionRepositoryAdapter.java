@@ -3,7 +3,6 @@ package com.sofitech.hoamaimart.transaction.adapter.out.persistence.repository;
 import com.sofitech.hoamaimart.transaction.adapter.out.persistence.entity.TransactionEntity;
 import com.sofitech.hoamaimart.transaction.domain.model.Transaction;
 import com.sofitech.hoamaimart.transaction.domain.port.out.TransactionRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -11,7 +10,7 @@ import java.util.UUID;
 /**
  * Adapter OUT: implement TransactionRepository dùng JPA.
  */
-@Repository
+
 public class TransactionRepositoryAdapter implements TransactionRepository {
 
     private final TransactionJpaRepository jpaRepository;

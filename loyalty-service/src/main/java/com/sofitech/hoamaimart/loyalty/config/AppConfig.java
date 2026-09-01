@@ -13,7 +13,12 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     @Bean
-    public LoyaltyCommandService loyaltyCommandService(LoyaltyRepository loyaltyRepository) {
+    public LoyaltyService loyaltyService(LoyaltyRepository loyaltyRepository) {
         return new LoyaltyService(loyaltyRepository);
+    }
+
+    @Bean
+    public LoyaltyCommandService loyaltyCommandService(LoyaltyService loyaltyService) {
+        return loyaltyService; // LoyaltyService implements LoyaltyCommandService
     }
 }

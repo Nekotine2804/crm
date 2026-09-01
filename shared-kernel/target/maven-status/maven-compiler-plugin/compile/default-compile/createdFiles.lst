@@ -1,6 +1,9 @@
 com/sofitech/hoamaimart/shared/event/DomainEvent.class
-com/sofitech/hoamaimart/shared/event/TransactionCompletedEvent.class
 com/sofitech/hoamaimart/shared/event/TransactionRefundedEvent.class
+com/sofitech/hoamaimart/shared/event/TierUpgradedEvent.class
 com/sofitech/hoamaimart/shared/error/BusinessException.class
 com/sofitech/hoamaimart/shared/error/ErrorResponse.class
 com/sofitech/hoamaimart/shared/error/BusinessErrorCode.class
+com/sofitech/hoamaimart/shared/event/PointsEarnedEvent.class
+com/sofitech/hoamaimart/shared/event/TransactionCompletedEvent.class
+com/sofitech/hoamaimart/shared/event/PointsRedeemedEvent.class

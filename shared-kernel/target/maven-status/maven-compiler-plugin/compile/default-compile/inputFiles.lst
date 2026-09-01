@@ -2,5 +2,8 @@
 /home/thanhdat/hoa-mai-mart-crm-ms/shared-kernel/src/main/java/com/sofitech/hoamaimart/shared/error/BusinessException.java
 /home/thanhdat/hoa-mai-mart-crm-ms/shared-kernel/src/main/java/com/sofitech/hoamaimart/shared/error/ErrorResponse.java
 /home/thanhdat/hoa-mai-mart-crm-ms/shared-kernel/src/main/java/com/sofitech/hoamaimart/shared/event/DomainEvent.java
+/home/thanhdat/hoa-mai-mart-crm-ms/shared-kernel/src/main/java/com/sofitech/hoamaimart/shared/event/PointsEarnedEvent.java
+/home/thanhdat/hoa-mai-mart-crm-ms/shared-kernel/src/main/java/com/sofitech/hoamaimart/shared/event/PointsRedeemedEvent.java
+/home/thanhdat/hoa-mai-mart-crm-ms/shared-kernel/src/main/java/com/sofitech/hoamaimart/shared/event/TierUpgradedEvent.java
 /home/thanhdat/hoa-mai-mart-crm-ms/shared-kernel/src/main/java/com/sofitech/hoamaimart/shared/event/TransactionCompletedEvent.java
 /home/thanhdat/hoa-mai-mart-crm-ms/shared-kernel/src/main/java/com/sofitech/hoamaimart/shared/event/TransactionRefundedEvent.java
