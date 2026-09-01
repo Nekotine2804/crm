@@ -8,9 +8,6 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * JPA Entity cho bảng notifications.
- */
 @Entity
 @Table(name = "notifications", indexes = {
         @Index(name = "idx_notification_customer_id", columnList = "customer_id"),
@@ -49,6 +46,10 @@ public class NotificationEntity {
 
     @Column(name = "sent_at")
     private Instant sentAt;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 
     protected NotificationEntity() {}
 
@@ -90,4 +91,5 @@ public class NotificationEntity {
     public String getChannel() { return channel; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getSentAt() { return sentAt; }
+    public Long getVersion() { return version; }
 }

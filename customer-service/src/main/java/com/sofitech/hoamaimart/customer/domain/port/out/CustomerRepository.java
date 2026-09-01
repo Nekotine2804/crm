@@ -5,13 +5,11 @@ import com.sofitech.hoamaimart.customer.domain.model.Customer;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Port OUT: repository interface - được implement bởi adapter persistence.
- * Domain không biết gì về JPA/Postgres.
- */
 public interface CustomerRepository {
 
-    Customer save(Customer customer);
+    Customer create(Customer customer);
+
+    Customer update(Customer customer);
 
     Optional<Customer> findById(UUID id);
 

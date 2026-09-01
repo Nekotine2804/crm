@@ -4,19 +4,17 @@ import com.sofitech.hoamaimart.customer.domain.model.Customer;
 import com.sofitech.hoamaimart.customer.domain.model.vo.CustomerName;
 import com.sofitech.hoamaimart.customer.domain.model.vo.PhoneNumber;
 import jakarta.persistence.*;
+import org.springframework.data.domain.Persistable;
 
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * JPA entity cho bảng customers.
- */
 @Entity
 @Table(name = "customers")
-public class CustomerEntity {
+public class CustomerEntity implements Persistable<UUID> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
     @Column(name = "phone", nullable = false, unique = true, length = 20)
@@ -31,9 +29,23 @@ public class CustomerEntity {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    protected CustomerEntity() {}
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
 
-    public CustomerEntity(UUID id, String phone, String name, Instant createdAt, Instant updatedAt) {
+    @Transient
+    private boolean isNew = true;
+
+    protected CustomerEntity() {
+    }
+
+    public CustomerEntity(
+            UUID id,
+            String phone,
+            String name,
+            Instant createdAt,
+            Instant updatedAt
+    ) {
         this.id = id;
         this.phone = phone;
         this.name = name;
@@ -41,18 +53,23 @@ public class CustomerEntity {
         this.updatedAt = updatedAt;
     }
 
-    // Convert to Domain
-    public Customer toDomain() {
-        return new Customer(
-                this.id,
-                PhoneNumber.of(this.phone),
-                CustomerName.of(this.name),
-                this.createdAt,
-                this.updatedAt
-        );
+    @Override
+    public UUID getId() {
+        return id;
     }
 
-    // Create from Domain
+    @Override
+    public boolean isNew() {
+        return isNew;
+    }
+
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    protected void markNotNew() {
+        this.isNew = false;
+    }
+
     public static CustomerEntity fromDomain(Customer customer) {
         return new CustomerEntity(
                 customer.getId(),
@@ -63,9 +80,26 @@ public class CustomerEntity {
         );
     }
 
-    // Getters
-    public UUID getId() {
-        return id;
+    public Customer toDomain() {
+        return new Customer(
+                id,
+                PhoneNumber.of(phone),
+                CustomerName.of(name),
+                createdAt,
+                updatedAt
+        );
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public String getPhone() {
@@ -82,5 +116,9 @@ public class CustomerEntity {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Long getVersion() {
+        return version;
     }
 }

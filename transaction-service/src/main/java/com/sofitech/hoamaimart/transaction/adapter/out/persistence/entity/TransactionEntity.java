@@ -8,9 +8,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * JPA entity cho bảng transactions.
- */
 @Entity
 @Table(name = "transactions")
 public class TransactionEntity {
@@ -28,9 +25,6 @@ public class TransactionEntity {
     @Column(name = "amount", nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 
-    /**
-     * Mã giao dịch duy nhất từ POS - dùng cho idempotency.
-     */
     @Column(name = "transaction_code", nullable = false, unique = true, length = 100)
     private String transactionCode;
 
@@ -49,6 +43,10 @@ public class TransactionEntity {
     @Column(name = "refund_reason", length = 255)
     private String refundReason;
 
+    @Version
+    @Column(name = "version")
+    private Long version;
+
     protected TransactionEntity() {}
 
     public TransactionEntity(UUID id, UUID customerId, String storeId, BigDecimal amount,
@@ -64,7 +62,6 @@ public class TransactionEntity {
     }
 
     public Transaction toDomain() {
-        // Rebuild domain object with all fields
         return new Transaction(
                 this.id,
                 this.customerId,
@@ -103,4 +100,5 @@ public class TransactionEntity {
     public Instant getUpdatedAt() { return updatedAt; }
     public Instant getCancelledAt() { return cancelledAt; }
     public String getRefundReason() { return refundReason; }
+    public Long getVersion() { return version; }
 }

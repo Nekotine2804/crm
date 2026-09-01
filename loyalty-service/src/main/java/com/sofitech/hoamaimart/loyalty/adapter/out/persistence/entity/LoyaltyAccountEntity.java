@@ -8,9 +8,6 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * JPA entity cho bảng loyalty_accounts.
- */
 @Entity
 @Table(name = "loyalty_accounts")
 public class LoyaltyAccountEntity {
@@ -41,6 +38,10 @@ public class LoyaltyAccountEntity {
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 
     protected LoyaltyAccountEntity() {}
 
@@ -79,4 +80,5 @@ public class LoyaltyAccountEntity {
     public Instant getLastTierEvaluation() { return lastTierEvaluation; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
+    public Long getVersion() { return version; }
 }

@@ -22,9 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-/**
- * REST Controller - Adapter IN: nhận request từ client qua API Gateway.
- */
+
 @RestController
 @RequestMapping("/api/customers")
 @Tag(name = "Customers", description = "Customer management endpoints")
