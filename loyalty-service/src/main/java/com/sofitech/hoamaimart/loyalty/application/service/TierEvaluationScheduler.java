@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -106,7 +107,9 @@ public class TierEvaluationScheduler {
         log.info("[Cleanup] Removing spending history > 13 months old...");
 
         // Keep 13 months to be safe (12 + 1 buffer)
-        Instant cutoffDate = Instant.now().minus(13, ChronoUnit.MONTHS);
+        Instant cutoffDate = ZonedDateTime.now(ZoneOffset.UTC)
+                .minusMonths(13)
+                .toInstant();
 
         if (loyaltyRepository instanceof com.sofitech.hoamaimart.loyalty.adapter.out.persistence.repository.LoyaltyRepositoryAdapter adapter) {
             adapter.cleanupOldSpendingHistory();

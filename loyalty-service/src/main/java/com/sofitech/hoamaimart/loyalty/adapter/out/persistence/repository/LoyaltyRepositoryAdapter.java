@@ -12,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -76,7 +77,9 @@ public class LoyaltyRepositoryAdapter implements LoyaltyRepository {
      * Tính tổng chi tiêu trong rolling window (12 tháng).
      */
     public BigDecimal calculateRollingWindowSpending(UUID customerId) {
-        Instant fromDate = Instant.now().minus(ROLLING_WINDOW_MONTHS, ChronoUnit.MONTHS);
+        Instant fromDate = ZonedDateTime.now(ZoneOffset.UTC)
+                .minusMonths(ROLLING_WINDOW_MONTHS)
+                .toInstant();
         return spendingRepository.sumSpendingSince(customerId, fromDate);
     }
 
@@ -92,7 +95,9 @@ public class LoyaltyRepositoryAdapter implements LoyaltyRepository {
      */
     @Transactional
     public void cleanupOldSpendingHistory() {
-        Instant cutoffDate = Instant.now().minus(ROLLING_WINDOW_MONTHS + 1, ChronoUnit.MONTHS);
+        Instant cutoffDate = ZonedDateTime.now(ZoneOffset.UTC)
+                .minusMonths(ROLLING_WINDOW_MONTHS + 1L)
+                .toInstant();
         spendingRepository.deleteBySpentAtBefore(cutoffDate);
     }
 
