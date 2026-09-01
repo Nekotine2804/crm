@@ -12,6 +12,7 @@
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/application/service/TierEvaluationScheduler.java
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/config/AppConfig.java
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/config/GlobalExceptionHandler.java
+/home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/config/OpenApiConfig.java
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/config/RabbitMQConfig.java
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/domain/model/LoyaltyAccount.java
 /home/thanhdat/hoa-mai-mart-crm-ms/loyalty-service/src/main/java/com/sofitech/hoamaimart/loyalty/domain/model/Points.java

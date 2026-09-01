@@ -13,6 +13,7 @@
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/application/service/CreateCustomerService.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/application/service/GetCustomerService.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/config/AppConfig.java
+/home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/config/OpenApiConfig.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/domain/exception/PhoneAlreadyExistsException.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/domain/model/Customer.java
 /home/thanhdat/hoa-mai-mart-crm-ms/customer-service/src/main/java/com/sofitech/hoamaimart/customer/domain/model/vo/CustomerName.java

@@ -9,13 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-/**
- * Ví dụ 1 global filter — chạy cho MỌI request đi qua gateway, tương đương
- * chỗ trước đây gán vào "plugin" của Kong. Đây là chỗ thêm sau này:
- *   - correlation-id cho tracing xuyên service
- *   - auth check (JWT) nếu tích hợp lại Keycloak
- *   - request/response logging tập trung
- */
 @Component
 public class RequestLoggingFilter implements GlobalFilter, Ordered {
 

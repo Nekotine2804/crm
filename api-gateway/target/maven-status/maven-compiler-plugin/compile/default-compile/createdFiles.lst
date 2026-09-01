@@ -1,2 +1,3 @@
-com/sofitech/hoamaimart/gateway/filter/RequestLoggingFilter.class
+com/sofitech/hoamaimart/gateway/config/OpenApiConfig.class
 com/sofitech/hoamaimart/gateway/ApiGatewayApplication.class
+com/sofitech/hoamaimart/gateway/filter/RequestLoggingFilter.class

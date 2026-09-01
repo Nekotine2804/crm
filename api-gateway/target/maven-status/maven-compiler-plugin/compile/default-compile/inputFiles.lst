@@ -1,2 +1,3 @@
 /home/thanhdat/hoa-mai-mart-crm-ms/api-gateway/src/main/java/com/sofitech/hoamaimart/gateway/ApiGatewayApplication.java
+/home/thanhdat/hoa-mai-mart-crm-ms/api-gateway/src/main/java/com/sofitech/hoamaimart/gateway/config/OpenApiConfig.java
 /home/thanhdat/hoa-mai-mart-crm-ms/api-gateway/src/main/java/com/sofitech/hoamaimart/gateway/filter/RequestLoggingFilter.java

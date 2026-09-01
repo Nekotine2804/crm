@@ -6,9 +6,9 @@ spring:
     name: transaction-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/hoa_mai_transaction
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://localhost:5443/hoa_mai_transaction
+    username: crm_user
+    password: change-me
 
   jpa:
     hibernate:
