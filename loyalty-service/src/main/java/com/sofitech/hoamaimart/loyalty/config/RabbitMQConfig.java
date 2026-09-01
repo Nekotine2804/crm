@@ -18,6 +18,12 @@ public class RabbitMQConfig {
     public static final String QUEUE = "loyalty.transaction.queue";
     public static final String ROUTING_KEY = "transaction.completed";
 
+    // TopicExchange
+    @Bean
+    public TopicExchange topicExchange() {
+        return new TopicExchange(EXCHANGE);
+    }
+
     // Queue
     @Bean
     public Queue loyaltyQueue() {
@@ -26,10 +32,10 @@ public class RabbitMQConfig {
 
     // Binding: queue -> exchange với routing key
     @Bean
-    public Binding loyaltyBinding(Queue loyaltyQueue, TopicExchange exchange) {
+    public Binding loyaltyBinding(Queue loyaltyQueue, TopicExchange topicExchange) {
         return BindingBuilder
                 .bind(loyaltyQueue)
-                .to(exchange)
+                .to(topicExchange)
                 .with(ROUTING_KEY);
     }
 

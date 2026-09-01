@@ -1,8 +1,11 @@
 package com.sofitech.hoamaimart.loyalty.adapter.out.persistence.repository;
 
 import com.sofitech.hoamaimart.loyalty.adapter.out.persistence.entity.LoyaltyAccountEntity;
+import com.sofitech.hoamaimart.loyalty.adapter.out.persistence.entity.PointTransactionEntity;
 import com.sofitech.hoamaimart.loyalty.adapter.out.persistence.entity.SpendingHistoryEntity;
 import com.sofitech.hoamaimart.loyalty.domain.model.LoyaltyAccount;
+import com.sofitech.hoamaimart.loyalty.domain.model.PointTransaction;
+import com.sofitech.hoamaimart.loyalty.domain.model.PointTransactionType;
 import com.sofitech.hoamaimart.loyalty.domain.port.out.LoyaltyRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,13 +27,16 @@ public class LoyaltyRepositoryAdapter implements LoyaltyRepository {
 
     private final LoyaltyJpaRepository jpaRepository;
     private final SpendingHistoryJpaRepository spendingRepository;
+    private final PointTransactionJpaRepository pointTransactionRepository;
 
     public LoyaltyRepositoryAdapter(
             LoyaltyJpaRepository jpaRepository,
-            SpendingHistoryJpaRepository spendingRepository
+            SpendingHistoryJpaRepository spendingRepository,
+            PointTransactionJpaRepository pointTransactionRepository
     ) {
         this.jpaRepository = jpaRepository;
         this.spendingRepository = spendingRepository;
+        this.pointTransactionRepository = pointTransactionRepository;
     }
 
     @Override
@@ -81,5 +88,35 @@ public class LoyaltyRepositoryAdapter implements LoyaltyRepository {
     public void cleanupOldSpendingHistory() {
         Instant cutoffDate = Instant.now().minus(ROLLING_WINDOW_MONTHS + 1, ChronoUnit.MONTHS);
         spendingRepository.deleteBySpentAtBefore(cutoffDate);
+    }
+
+    // ===== Point Transaction methods =====
+
+    @Override
+    @Transactional
+    public PointTransaction savePointTransaction(PointTransaction transaction) {
+        PointTransactionEntity entity = PointTransactionEntity.fromDomain(transaction);
+        return pointTransactionRepository.save(entity).toDomain();
+    }
+
+    @Override
+    public List<PointTransaction> findPointTransactionsByCustomerId(UUID customerId) {
+        return pointTransactionRepository.findByCustomerIdOrderByCreatedAtDesc(customerId)
+                .stream()
+                .map(PointTransactionEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<PointTransaction> findPointTransactionsByCustomerIdAndType(UUID customerId, PointTransactionType type) {
+        return pointTransactionRepository.findByCustomerIdAndTypeOrderByCreatedAtDesc(customerId, type)
+                .stream()
+                .map(PointTransactionEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public boolean existsPointTransactionByReferenceIdAndType(String referenceId, PointTransactionType type) {
+        return pointTransactionRepository.existsByReferenceIdAndType(referenceId, type);
     }
 }

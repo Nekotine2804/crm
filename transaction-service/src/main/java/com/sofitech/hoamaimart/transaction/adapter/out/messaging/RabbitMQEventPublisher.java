@@ -7,10 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * Adapter OUT: publish events qua RabbitMQ.
  */
+@Component
 public class RabbitMQEventPublisher implements EventPublisher {
 
     private static final Logger log = LoggerFactory.getLogger(RabbitMQEventPublisher.class);
@@ -30,15 +32,17 @@ public class RabbitMQEventPublisher implements EventPublisher {
     public void publishTransactionCompleted(Transaction transaction) {
         TransactionCompletedEvent event = new TransactionCompletedEvent(
                 transaction.getId(),
+                transaction.getTransactionCode(),
                 transaction.getCustomerId(),
                 transaction.getStoreId(),
-                transaction.getAmountValue()
+                transaction.getAmountValue(),
+                transaction.getCreatedAt()
         );
 
         // Routing key = event type
         rabbitTemplate.convertAndSend(exchange, event.eventType(), event);
 
-        log.info("Published transaction.completed event: transactionId={}, customerId={}, amount={}",
-                transaction.getId(), transaction.getCustomerId(), transaction.getAmountValue());
+        log.info("Published transaction.completed event: transactionId={}, transactionCode={}, customerId={}, amount={}",
+                transaction.getId(), transaction.getTransactionCode(), transaction.getCustomerId(), transaction.getAmountValue());
     }
 }

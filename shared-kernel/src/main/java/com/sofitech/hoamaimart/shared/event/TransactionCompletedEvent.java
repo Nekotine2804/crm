@@ -15,23 +15,29 @@ public class TransactionCompletedEvent implements DomainEvent {
     private final String eventType;
 
     private final UUID transactionId;
+    private final String transactionCode;      // Code for idempotency (e.g., POS-20260901-000001)
     private final UUID customerId;
     private final String storeId;
     private final BigDecimal amount;
+    private final Instant transactionTime;
 
     public TransactionCompletedEvent(
             UUID transactionId,
+            String transactionCode,
             UUID customerId,
             String storeId,
-            BigDecimal amount
+            BigDecimal amount,
+            Instant transactionTime
     ) {
         this.eventId = UUID.randomUUID();
         this.occurredAt = Instant.now();
         this.eventType = "transaction.completed";
         this.transactionId = transactionId;
+        this.transactionCode = transactionCode;
         this.customerId = customerId;
         this.storeId = storeId;
         this.amount = amount;
+        this.transactionTime = transactionTime;
     }
 
     @Override
@@ -53,6 +59,10 @@ public class TransactionCompletedEvent implements DomainEvent {
         return transactionId;
     }
 
+    public String getTransactionCode() {
+        return transactionCode;
+    }
+
     public UUID getCustomerId() {
         return customerId;
     }
@@ -63,5 +73,9 @@ public class TransactionCompletedEvent implements DomainEvent {
 
     public BigDecimal getAmount() {
         return amount;
+    }
+
+    public Instant getTransactionTime() {
+        return transactionTime;
     }
 }
