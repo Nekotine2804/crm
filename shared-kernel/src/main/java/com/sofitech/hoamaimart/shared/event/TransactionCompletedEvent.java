@@ -4,75 +4,24 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
+/** Event emitted after a POS transaction completes. */
+public record TransactionCompletedEvent(
+        UUID eventId, Instant occurredAt, String eventType,
+        UUID transactionId, String transactionCode, UUID customerId,
+        String storeId, BigDecimal amount, Instant transactionTime
+) implements DomainEvent {
 
-public class TransactionCompletedEvent implements DomainEvent {
-
-    private final UUID eventId;
-    private final Instant occurredAt;
-    private final String eventType;
-
-    private final UUID transactionId;
-    private final String transactionCode;      // Code for idempotency (e.g., POS-20260901-000001)
-    private final UUID customerId;
-    private final String storeId;
-    private final BigDecimal amount;
-    private final Instant transactionTime;
-
-    public TransactionCompletedEvent(
-            UUID transactionId,
-            String transactionCode,
-            UUID customerId,
-            String storeId,
-            BigDecimal amount,
-            Instant transactionTime
-    ) {
-        this.eventId = UUID.randomUUID();
-        this.occurredAt = Instant.now();
-        this.eventType = "transaction.completed";
-        this.transactionId = transactionId;
-        this.transactionCode = transactionCode;
-        this.customerId = customerId;
-        this.storeId = storeId;
-        this.amount = amount;
-        this.transactionTime = transactionTime;
+    public TransactionCompletedEvent(UUID transactionId, String transactionCode,
+                                     UUID customerId, String storeId,
+                                     BigDecimal amount, Instant transactionTime) {
+        this(UUID.randomUUID(), Instant.now(), "transaction.completed",
+                transactionId, transactionCode, customerId, storeId, amount, transactionTime);
     }
 
-    @Override
-    public UUID eventId() {
-        return eventId;
-    }
-
-    @Override
-    public Instant occurredAt() {
-        return occurredAt;
-    }
-
-    @Override
-    public String eventType() {
-        return eventType;
-    }
-
-    public UUID getTransactionId() {
-        return transactionId;
-    }
-
-    public String getTransactionCode() {
-        return transactionCode;
-    }
-
-    public UUID getCustomerId() {
-        return customerId;
-    }
-
-    public String getStoreId() {
-        return storeId;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public Instant getTransactionTime() {
-        return transactionTime;
-    }
+    public UUID getTransactionId() { return transactionId; }
+    public String getTransactionCode() { return transactionCode; }
+    public UUID getCustomerId() { return customerId; }
+    public String getStoreId() { return storeId; }
+    public BigDecimal getAmount() { return amount; }
+    public Instant getTransactionTime() { return transactionTime; }
 }

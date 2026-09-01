@@ -36,7 +36,8 @@ public class TransactionEventListener {
             // Sử dụng earnPoints với idempotency check
             var pointTransaction = loyaltyService.earnPoints(
                     event.getCustomerId(),
-                    event.getTransactionCode(),  // Dùng transactionCode làm reference
+                    event.getTransactionId(),
+                    event.getTransactionCode(),
                     event.getAmount()
             );
 

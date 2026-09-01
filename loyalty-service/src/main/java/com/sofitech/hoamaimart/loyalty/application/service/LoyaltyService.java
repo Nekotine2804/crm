@@ -12,6 +12,7 @@ import com.sofitech.hoamaimart.shared.error.BusinessException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
+import java.nio.charset.StandardCharsets;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -97,13 +98,25 @@ public class LoyaltyService implements LoyaltyCommandService {
      * @return PointTransaction đã tạo, hoặc null nếu đã tồn tại
      */
     public PointTransaction earnPoints(
-            UUID customerId, 
-            String transactionId, 
+            UUID customerId,
+            String transactionReference,
+            BigDecimal amount
+    ) {
+        UUID transactionId = UUID.nameUUIDFromBytes(
+                transactionReference.getBytes(StandardCharsets.UTF_8));
+        return earnPoints(customerId, transactionId, transactionReference, amount);
+    }
+
+    @Transactional
+    public PointTransaction earnPoints(
+            UUID customerId,
+            UUID transactionId,
+            String transactionReference,
             BigDecimal amount
     ) {
         // 1. Idempotency check
         if (loyaltyRepository.existsPointTransactionByReferenceIdAndType(
-                transactionId, PointTransactionType.EARN)) {
+                transactionReference, PointTransactionType.EARN)) {
             return null; // Đã tích điểm cho transaction này rồi
         }
 
@@ -122,7 +135,7 @@ public class LoyaltyService implements LoyaltyCommandService {
         // 5. Ghi lịch sử chi tiêu cho rolling window
         loyaltyRepository.recordSpending(
                 customerId,
-                UUID.fromString(transactionId),
+                transactionId,
                 amount,
                 Instant.now()
         );
@@ -141,7 +154,7 @@ public class LoyaltyService implements LoyaltyCommandService {
                 customerId,
                 earnedPoints.value(),
                 newBalance,
-                transactionId
+                transactionReference
         );
 
         return loyaltyRepository.savePointTransaction(pointTransaction);

@@ -20,7 +20,6 @@ import java.util.UUID;
 public class PointTransactionEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "loyalty_account_id", nullable = false)

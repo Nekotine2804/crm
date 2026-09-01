@@ -4,57 +4,20 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * Event published when a transaction is refunded.
- * Consumed by loyalty-service to reverse loyalty points.
- */
-public class TransactionRefundedEvent implements DomainEvent {
+/** Event emitted when a completed transaction is refunded. */
+public record TransactionRefundedEvent(
+        UUID eventId, Instant occurredAt, String eventType,
+        UUID transactionId, String transactionCode, UUID customerId,
+        String storeId, BigDecimal originalAmount, String refundReason,
+        Instant refundedAt
+) implements DomainEvent {
 
-    private final UUID eventId;
-    private final Instant occurredAt;
-    private final String eventType;
-
-    private final UUID transactionId;
-    private final String transactionCode;
-    private final UUID customerId;
-    private final String storeId;
-    private final BigDecimal originalAmount;
-    private final String refundReason;
-    private final Instant refundedAt;
-
-    public TransactionRefundedEvent(
-            UUID transactionId,
-            String transactionCode,
-            UUID customerId,
-            String storeId,
-            BigDecimal originalAmount,
-            String refundReason
-    ) {
-        this.eventId = UUID.randomUUID();
-        this.occurredAt = Instant.now();
-        this.eventType = "transaction.refunded";
-        this.transactionId = transactionId;
-        this.transactionCode = transactionCode;
-        this.customerId = customerId;
-        this.storeId = storeId;
-        this.originalAmount = originalAmount;
-        this.refundReason = refundReason;
-        this.refundedAt = Instant.now();
-    }
-
-    @Override
-    public UUID eventId() {
-        return eventId;
-    }
-
-    @Override
-    public Instant occurredAt() {
-        return occurredAt;
-    }
-
-    @Override
-    public String eventType() {
-        return eventType;
+    public TransactionRefundedEvent(UUID transactionId, String transactionCode,
+                                    UUID customerId, String storeId,
+                                    BigDecimal originalAmount, String refundReason) {
+        this(UUID.randomUUID(), Instant.now(), "transaction.refunded",
+                transactionId, transactionCode, customerId, storeId,
+                originalAmount, refundReason, Instant.now());
     }
 
     public UUID getTransactionId() { return transactionId; }

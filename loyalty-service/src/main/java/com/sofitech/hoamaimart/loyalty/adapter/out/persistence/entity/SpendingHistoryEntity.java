@@ -14,7 +14,6 @@ import java.util.UUID;
 public class SpendingHistoryEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "customer_id", nullable = false)
