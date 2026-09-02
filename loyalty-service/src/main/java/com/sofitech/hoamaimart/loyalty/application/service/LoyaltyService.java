@@ -58,7 +58,8 @@ public class LoyaltyService implements LoyaltyCommandService {
     }
 
     @Override
-    public LoyaltyAccount redeem(UUID customerId, int pointsToRedeem) {
+    @Transactional
+    public LoyaltyAccount redeem(UUID customerId, int pointsToRedeem, String redemptionId) {
         if (pointsToRedeem <= 0) {
             throw BusinessException.of(
                 BusinessErrorCode.LOYALTY_INVALID_POINTS,
@@ -80,8 +81,15 @@ public class LoyaltyService implements LoyaltyCommandService {
 
         LoyaltyAccount savedAccount = loyaltyRepository.save(account);
 
-        // Publish event
-        eventPublisher.publishPointsRedeemed(customerId, pointsToRedeem, "Reward", savedAccount.getPoints().value());
+        PointTransaction pointTransaction = PointTransaction.redeem(
+                savedAccount.getId(), customerId, pointsToRedeem,
+                savedAccount.getPoints().value(), redemptionId
+        );
+        loyaltyRepository.savePointTransaction(pointTransaction);
+
+        eventPublisher.publishPointsRedeemed(
+                customerId, redemptionId, pointsToRedeem, "Reward", savedAccount.getPoints().value()
+        );
 
         return savedAccount;
     }
@@ -141,33 +149,6 @@ public class LoyaltyService implements LoyaltyCommandService {
         }
 
         return saved;
-    }
-
-    public PointTransaction recordRedeem(
-            UUID customerId,
-            int pointsToRedeem,
-            String redemptionId
-    ) {
-        LoyaltyAccount account = loyaltyRepository.findByCustomerId(customerId)
-                .orElseThrow(() -> BusinessException.of(
-                    BusinessErrorCode.LOYALTY_ACCOUNT_NOT_FOUND,
-                    "Khách hàng chưa có tài khoản loyalty: " + customerId
-                ));
-
-        try {
-            account.redeem(Points.of(pointsToRedeem));
-        } catch (IllegalArgumentException e) {
-            throw BusinessException.of(BusinessErrorCode.LOYALTY_INSUFFICIENT_POINTS, e.getMessage());
-        }
-
-        LoyaltyAccount savedAccount = loyaltyRepository.save(account);
-
-        PointTransaction pointTransaction = PointTransaction.redeem(
-                savedAccount.getId(), customerId, pointsToRedeem,
-                savedAccount.getPoints().value(), redemptionId
-        );
-
-        return loyaltyRepository.savePointTransaction(pointTransaction);
     }
 
     public PointTransaction refundPoints(

@@ -34,8 +34,7 @@ public class LoyaltyEventPublisher {
         log.info("Published tier.upgraded event for customer {}: {} -> {}", customerId, oldTier, newTier);
     }
 
-    public void publishPointsRedeemed(UUID customerId, int redeemedPoints, String reward, int remainingBalance) {
-        String redemptionId = "RED-" + UUID.randomUUID().toString().substring(0, 8);
+    public void publishPointsRedeemed(UUID customerId, String redemptionId, int redeemedPoints, String reward, int remainingBalance) {
         PointsRedeemedEvent event = new PointsRedeemedEvent(
                 customerId, redemptionId, redeemedPoints, reward, remainingBalance
         );

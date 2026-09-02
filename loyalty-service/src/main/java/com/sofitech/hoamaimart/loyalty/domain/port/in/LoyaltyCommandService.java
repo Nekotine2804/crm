@@ -20,8 +20,9 @@ public interface LoyaltyCommandService {
      * Quy đổi điểm loyalty (redeem).
      * @param customerId ID khách hàng
      * @param pointsToRedeem số điểm muốn quy đổi
+     * @param redemptionId mã tham chiếu duy nhất của lần quy đổi
      * @return LoyaltyAccount mới sau khi trừ điểm
      * @throws IllegalArgumentException nếu không đủ điểm
      */
-    LoyaltyAccount redeem(UUID customerId, int pointsToRedeem);
+    LoyaltyAccount redeem(UUID customerId, int pointsToRedeem, String redemptionId);
 }

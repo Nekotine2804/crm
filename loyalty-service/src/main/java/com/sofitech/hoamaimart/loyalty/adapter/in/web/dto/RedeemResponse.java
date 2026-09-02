@@ -15,10 +15,10 @@ public record RedeemResponse(
         String redemptionId,
         String status
 ) {
-    public static RedeemResponse from(LoyaltyAccount account, String redemptionId) {
+    public static RedeemResponse from(LoyaltyAccount account, int redeemedPoints, String redemptionId) {
         return new RedeemResponse(
                 account.getCustomerId(),
-                0, // redeemed points - could be tracked separately
+                redeemedPoints,
                 account.getPoints().value(),
                 account.getTier().name(),
                 redemptionId,

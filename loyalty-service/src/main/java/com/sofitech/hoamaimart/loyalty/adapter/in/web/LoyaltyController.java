@@ -119,13 +119,12 @@ public class LoyaltyController {
             @Parameter(description = "Customer UUID") @PathVariable UUID customerId,
             @Valid @RequestBody RedeemRequest request
     ) {
-        LoyaltyAccount redeemed = loyaltyService.redeem(customerId, request.points());
-        
-        // Record point transaction
-        String redemptionId = UUID.randomUUID().toString();
-        loyaltyService.recordRedeem(customerId, request.points(), redemptionId);
+        String redemptionId = "RED-" + UUID.randomUUID();
+        LoyaltyAccount redeemed = loyaltyService.redeem(
+                customerId, request.points(), redemptionId
+        );
 
-        return ResponseEntity.ok(RedeemResponse.from(redeemed, redemptionId));
+        return ResponseEntity.ok(RedeemResponse.from(redeemed, request.points(), redemptionId));
     }
 
     /**
