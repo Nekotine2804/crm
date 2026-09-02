@@ -9,18 +9,20 @@ import com.sofitech.hoamaimart.transaction.domain.port.out.EventPublisher;
 import com.sofitech.hoamaimart.transaction.domain.port.out.TransactionRepository;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
  * Application service: xử lý use case "tạo giao dịch".
  *
  * Flow:
- * 1. Idempotency: check transactionCode đã tồn tại chưa
- * 2. Validate customer (tồn tại + ACTIVE)
- * 3. Validate amount > 0
- * 4. Tạo transaction
- * 5. Lưu DB
- * 6. Publish event
+ * 1. Auto-generate transactionCode nếu không được cung cấp
+ * 2. Idempotency: check transactionCode đã tồn tại chưa
+ * 3. Validate customer (tồn tại + ACTIVE)
+ * 4. Validate amount > 0
+ * 5. Tạo transaction
+ * 6. Lưu DB
+ * 7. Publish event
  */
 public class CreateTransactionService implements CreateTransactionCommandService {
 
@@ -46,16 +48,21 @@ public class CreateTransactionService implements CreateTransactionCommandService
                     "Số tiền phải > 0, nhận: " + amount);
         }
 
-        // 2. Idempotency: nếu transactionCode đã tồn tại → trả về transaction cũ
+        // 2. Auto-generate transactionCode nếu không được cung cấp
+        if (transactionCode == null || transactionCode.isBlank()) {
+            transactionCode = generateTransactionCode();
+        }
+
+        // 3. Idempotency: nếu transactionCode đã tồn tại → trả về transaction cũ
         var existing = transactionRepository.findByTransactionCode(transactionCode);
         if (existing.isPresent()) {
             return existing.get();
         }
 
-        // 3. Validate customer (cross-service call)
+        // 4. Validate customer (cross-service call)
         customerClient.validateActiveCustomer(customerId);
 
-        // 4. Tạo domain transaction
+        // 5. Tạo domain transaction
         Transaction transaction;
         try {
             transaction = Transaction.create(customerId, storeId, transactionCode, amount);
@@ -63,12 +70,23 @@ public class CreateTransactionService implements CreateTransactionCommandService
             throw BusinessException.of(BusinessErrorCode.POS_INVALID_AMOUNT, e.getMessage());
         }
 
-        // 5. Lưu DB
+        // 6. Lưu DB
         Transaction saved = transactionRepository.save(transaction);
 
-        // 6. Publish event
+        // 7. Publish event
         eventPublisher.publishTransactionCompleted(saved);
 
         return saved;
+    }
+
+    /**
+     * Tạo transaction code tự động theo format: TXN-{timestamp}-{uuid-first-8chars}
+     * Ví dụ: TXN-20260902-abc12345
+     */
+    private String generateTransactionCode() {
+        String timestamp = java.time.LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        String uuidPart = UUID.randomUUID().toString().substring(0, 8);
+        return "TXN-" + timestamp + "-" + uuidPart;
     }
 }
