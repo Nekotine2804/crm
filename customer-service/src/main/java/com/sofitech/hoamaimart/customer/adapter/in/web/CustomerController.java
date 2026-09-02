@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 
@@ -48,7 +49,11 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<?> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
         try {
-            Customer customer = customerCommandService.createCustomer(request.phone(), request.name());
+            Customer customer = customerCommandService.createCustomer(
+                    request.phone(),
+                    request.name(),
+                    request.dateOfBirth()
+            );
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(CreateCustomerResponse.from(customer));
         } catch (IllegalArgumentException e) {
@@ -76,7 +81,12 @@ public class CustomerController {
             @Valid @RequestBody UpdateCustomerRequest request
     ) {
         try {
-            Customer customer = customerCommandService.updateCustomer(id, request.phone(), request.name());
+            Customer customer = customerCommandService.updateCustomer(
+                    id,
+                    request.phone(),
+                    request.name(),
+                    request.dateOfBirth()
+            );
             return ResponseEntity.ok(UpdateCustomerResponse.from(customer));
         } catch (CustomerNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)

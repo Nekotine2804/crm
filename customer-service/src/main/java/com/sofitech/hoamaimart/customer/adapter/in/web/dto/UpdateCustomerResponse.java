@@ -3,6 +3,7 @@ package com.sofitech.hoamaimart.customer.adapter.in.web.dto;
 import com.sofitech.hoamaimart.customer.domain.model.Customer;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -12,6 +13,7 @@ public record UpdateCustomerResponse(
         UUID id,
         String phone,
         String name,
+        LocalDate dateOfBirth,
         Instant createdAt,
         Instant updatedAt
 ) {
@@ -20,6 +22,7 @@ public record UpdateCustomerResponse(
                 customer.getId(),
                 customer.getPhoneValue(),
                 customer.getNameValue(),
+                customer.getDateOfBirth(),
                 customer.getCreatedAt(),
                 customer.getUpdatedAt()
         );
