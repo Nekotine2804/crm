@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import org.springframework.data.domain.Persistable;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +23,9 @@ public class CustomerEntity implements Persistable<UUID> {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -43,12 +47,14 @@ public class CustomerEntity implements Persistable<UUID> {
             UUID id,
             String phone,
             String name,
+            LocalDate dateOfBirth,
             Instant createdAt,
             Instant updatedAt
     ) {
         this.id = id;
         this.phone = phone;
         this.name = name;
+        this.dateOfBirth = dateOfBirth;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -75,6 +81,7 @@ public class CustomerEntity implements Persistable<UUID> {
                 customer.getId(),
                 customer.getPhoneValue(),
                 customer.getNameValue(),
+                customer.getDateOfBirth(),
                 customer.getCreatedAt(),
                 customer.getUpdatedAt()
         );
@@ -85,6 +92,7 @@ public class CustomerEntity implements Persistable<UUID> {
                 id,
                 PhoneNumber.of(phone),
                 CustomerName.of(name),
+                dateOfBirth,
                 createdAt,
                 updatedAt
         );
@@ -96,6 +104,14 @@ public class CustomerEntity implements Persistable<UUID> {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public void setUpdatedAt(Instant updatedAt) {

@@ -4,6 +4,7 @@ import com.sofitech.hoamaimart.customer.domain.model.vo.CustomerName;
 import com.sofitech.hoamaimart.customer.domain.model.vo.PhoneNumber;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -14,13 +15,15 @@ public class Customer {
     private final UUID id;
     private PhoneNumber phone;
     private CustomerName name;
+    private LocalDate dateOfBirth;
     private Instant createdAt;
     private Instant updatedAt;
 
-    public Customer(UUID id, PhoneNumber phone, CustomerName name, Instant createdAt, Instant updatedAt) {
+    public Customer(UUID id, PhoneNumber phone, CustomerName name, LocalDate dateOfBirth, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.phone = phone;
         this.name = name;
+        this.dateOfBirth = dateOfBirth;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -28,12 +31,13 @@ public class Customer {
     /**
      * Factory method: tạo customer mới.
      */
-    public static Customer create(String phone, String name) {
+    public static Customer create(String phone, String name, LocalDate dateOfBirth) {
         Instant now = Instant.now();
         return new Customer(
                 UUID.randomUUID(),
                 PhoneNumber.of(phone),
                 CustomerName.of(name),
+                dateOfBirth,
                 now,
                 now
         );
@@ -42,12 +46,15 @@ public class Customer {
     /**
      * Update thông tin customer.
      */
-    public void update(String phone, String name) {
+    public void update(String phone, String name, LocalDate dateOfBirth) {
         if (phone != null && !phone.isBlank()) {
             this.phone = PhoneNumber.of(phone);
         }
         if (name != null && !name.isBlank()) {
             this.name = CustomerName.of(name);
+        }
+        if (dateOfBirth != null) {
+            this.dateOfBirth = dateOfBirth;
         }
         this.updatedAt = Instant.now();
     }
@@ -73,6 +80,10 @@ public class Customer {
 
     public CustomerName getName() {
         return name;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
     public Instant getCreatedAt() {

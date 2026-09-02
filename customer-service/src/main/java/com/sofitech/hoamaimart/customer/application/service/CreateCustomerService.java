@@ -9,6 +9,7 @@ import com.sofitech.hoamaimart.customer.domain.port.out.EventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -24,13 +25,13 @@ public class CreateCustomerService implements CustomerCommandService {
 
     @Override
     @Transactional
-    public Customer createCustomer(String phone, String name) {
+    public Customer createCustomer(String phone, String name, LocalDate dateOfBirth) {
 
         if (customerRepository.existsByPhone(phone)) {
             throw new PhoneAlreadyExistsException(phone);
         }
 
-        Customer customer = Customer.create(phone, name);
+        Customer customer = Customer.create(phone, name, dateOfBirth);
 
         Customer savedCustomer = customerRepository.create(customer);
         eventPublisher.publishCustomerCreated(savedCustomer);
@@ -42,7 +43,8 @@ public class CreateCustomerService implements CustomerCommandService {
     public Customer updateCustomer(
             UUID id,
             String phone,
-            String name
+            String name,
+            LocalDate dateOfBirth
     ) {
 
         Customer customer = customerRepository.findById(id)
@@ -58,7 +60,7 @@ public class CreateCustomerService implements CustomerCommandService {
             throw new PhoneAlreadyExistsException(phone);
         }
 
-        customer.update(phone, name);
+        customer.update(phone, name, dateOfBirth);
 
         return customerRepository.update(customer);
     }
