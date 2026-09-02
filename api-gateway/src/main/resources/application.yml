@@ -17,8 +17,6 @@ spring:
           uri: http://localhost:8082
           predicates:
             - Path=/api/v1/customers/**
-          filters:
-            - RewritePath=/api/v1/(?<segment>.*), /api/v1/customers/$\{segment}
 
         - id: transaction-service
           uri: http://localhost:8083
